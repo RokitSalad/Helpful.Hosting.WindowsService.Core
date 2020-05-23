@@ -60,17 +60,13 @@ stages:
       runOnce:
         deploy:
           steps:
-          - task: DotNetCoreCLI@2
-            displayName: 'dotnet pack'
-            inputs:
-              command: 'pack'
-              packagesToPack: '**/*.csproj'
-              versioningScheme: 'byBuildNumber'
-              verbosityPack: 'Diagnostic'
+          - download: current
+            displayName: 'retrieve artifact'
+            artifact: Helpful.Hosting.WindowsService.Core
           - task: DotNetCoreCLI@2
             displayName: 'dotnet push'
             inputs:
               command: 'push'              
-              packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+              packagesToPush: '$(Pipeline.Workspac)/*.nupkg'
               nuGetFeedType: 'external'
               publishFeedCredentials: 'Nuget.org'
