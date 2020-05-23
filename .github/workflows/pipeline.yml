@@ -18,9 +18,9 @@ jobs:
       with:
         dotnet-version: 3.1.101
     - name: Install dependencies
-      run: dotnet restore src/Helpful.Hosting/Helpful.Hosting.WindowsService.Core/Helpful.Hosting.WindowsService.Core.csproj
+      run: dotnet restore /src/Helpful.Hosting/Helpful.Hosting.WindowsService.Core/Helpful.Hosting.WindowsService.Core.csproj
     - name: Build
-      run: dotnet build src/Helpful.Hosting/Helpful.Hosting.WindowsService.Core/Helpful.Hosting.WindowsService.Core.csproj --configuration Release --no-restore 
+      run: dotnet build /src/Helpful.Hosting/Helpful.Hosting.WindowsService.Core/Helpful.Hosting.WindowsService.Core.csproj --configuration Release --no-restore 
     #- name: Test
       #run: dotnet test --no-restore --verbosity normal
     - name: Publish NuGet
