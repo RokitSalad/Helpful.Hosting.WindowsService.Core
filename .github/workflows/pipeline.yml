@@ -18,11 +18,11 @@ jobs:
       with:
         dotnet-version: 3.1.101
     - name: Install dependencies
-      run: dotnet restore
+      run: dotnet restore src/Helpful.Hosting/Helpful.Hosting.WindowsService.Core/Helpful.Hosting.WindowsService.Core.csproj
     - name: Build
-      run: dotnet build --configuration Release --no-restore
-    - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet build src/Helpful.Hosting/Helpful.Hosting.WindowsService.Core/Helpful.Hosting.WindowsService.Core.csproj --configuration Release --no-restore 
+    #- name: Test
+      #run: dotnet test --no-restore --verbosity normal
     - name: Publish NuGet
       uses: brandedoutcast/publish-nuget@v2.5.2
       with:
