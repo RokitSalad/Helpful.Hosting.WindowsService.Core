@@ -14,6 +14,7 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
+  buildVersion: 1.0.$(Rev:r)
 
 stages:
 - stage: Dev
@@ -66,7 +67,7 @@ stages:
               feed: '40f82a44-ccb3-4b97-b78a-4f61f521b9c3/e3313fb1-271b-4c42-99cc-f1a0935904b2'
               view: 
               definition: '78984812-5c9b-4eff-9921-788f5c47e716'
-              version: '1.0.$(Rev:r)'
+              version: $buildVersion
               extract: false
               downloadPath: '$(Pipeline.Workspace)/'
           - task: DotNetCoreCLI@2
