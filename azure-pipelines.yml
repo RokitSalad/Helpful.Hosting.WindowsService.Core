@@ -30,33 +30,40 @@ stages:
         command: 'build'
         projects: '**/*.csproj'
 
-  - job: PublishLocal
+  - deployment: PublishLocal
+    environment: Development
     displayName: 'Publish to Artefacts'
     dependsOn: Build
-    steps:
-    - task: DotNetCoreCLI@2
-      inputs:
-        command: 'pack'
-        packagesToPack: '**/*.csproj'
-        nobuild: true
-        versioningScheme: 'byBuildNumber'
-        verbosityPack: 'Diagnostic'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: 'pack'
+              packagesToPack: '**/*.csproj'
+              nobuild: true
+              versioningScheme: 'byBuildNumber'
+              verbosityPack: 'Diagnostic'
 
-    - task: DotNetCoreCLI@2
-      inputs:
-        command: 'push'
-        packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
-        nuGetFeedType: 'internal'
-        publishVstsFeed: '03d48210-1522-48ae-a74a-2cc9bf61d73c'
+          - task: DotNetCoreCLI@2
+            inputs:              
+              command: 'push'
+              packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+              nuGetFeedType: 'internal'
+              publishVstsFeed: '03d48210-1522-48ae-a74a-2cc9bf61d73c'
 
 - stage: Release
   dependsOn: Dev
   jobs:
-  - job: PublishPublic
-    steps:
-    - task: DotNetCoreCLI@2
-      inputs:
-        command: 'push'
-        packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
-        nuGetFeedType: 'external'
-        publishFeedCredentials: 'Nuget.org'
+  - deployment: PublishPublic
+    displayName: 'Publish to Nuget.org'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: 'push'              packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+              nuGetFeedType: 'external'
+              publishFeedCredentials: 'Nuget.org'
