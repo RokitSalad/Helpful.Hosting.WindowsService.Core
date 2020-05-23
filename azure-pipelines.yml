@@ -58,6 +58,7 @@ stages:
   jobs:
   - deployment: PublishPublic
     displayName: 'Publish to Nuget.org'
+    environment: 'Public Nuget'
     strategy:
       runOnce:
         deploy:
