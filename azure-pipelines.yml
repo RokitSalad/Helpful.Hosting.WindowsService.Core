@@ -31,6 +31,8 @@ stages:
         projects: '**/*.csproj'
 
   - job: PublishLocal
+    displayName: 'Publish to Artefacts'
+    dependsOn: Build
     steps:
     - task: DotNetCoreCLI@2
       inputs:
@@ -48,6 +50,7 @@ stages:
         publishVstsFeed: '03d48210-1522-48ae-a74a-2cc9bf61d73c'
 
 - stage: Release
+  dependsOn: Dev
   jobs:
   - job: PublishPublic
     steps:
