@@ -19,7 +19,6 @@ stages:
 - stage: Dev
   jobs:
   - job: Build
-    environment: Development
     steps:
 
     - task: DotNetCoreCLI@2
