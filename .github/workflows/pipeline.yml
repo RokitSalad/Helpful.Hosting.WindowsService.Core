@@ -27,6 +27,6 @@ jobs:
       uses: brandedoutcast/publish-nuget@v2.5.2
       with:
         # Filepath of the project to be packaged, relative to root of repository
-        PROJECT_FILE_PATH: src/Helpful.Hosting/Helpful.Hosting.WindowsService.Core/Helpful.Hosting.WindowsService.Core.csproj
+        PROJECT_FILE_PATH: src/Helpful.Hosting.WindowsService.Core/Helpful.Hosting.WindowsService.Core/Helpful.Hosting.WindowsService.Core.csproj
         # API key to authenticate with NuGet server
         NUGET_KEY: oy2bif6ytvxnq5m6uzba7fzynrn3to5ebmvyzzgxscgdym
