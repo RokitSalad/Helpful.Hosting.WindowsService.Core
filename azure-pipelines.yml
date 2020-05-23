@@ -47,7 +47,6 @@ stages:
             inputs:
               command: 'pack'
               packagesToPack: '**/*.csproj'
-              nobuild: true
               versioningScheme: 'byBuildNumber'
               verbosityPack: 'Diagnostic'
 
@@ -69,6 +68,13 @@ stages:
       runOnce:
         deploy:
           steps:
+          - task: DotNetCoreCLI@2
+            displayName: 'dotnet pack'
+            inputs:
+              command: 'pack'
+              packagesToPack: '**/*.csproj'
+              versioningScheme: 'byBuildNumber'
+              verbosityPack: 'Diagnostic'
           - task: DotNetCoreCLI@2
             displayName: 'dotnet push'
             inputs:
