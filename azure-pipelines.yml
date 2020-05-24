@@ -43,6 +43,9 @@ stages:
         versioningScheme: 'byBuildNumber'
         verbosityPack: 'Diagnostic'
 
+    - publish: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+      artifact: Helpful.Hosting.Windows.Service.Core
+
     - task: DotNetCoreCLI@2
       displayName: 'dotnet push'
       inputs:
@@ -61,15 +64,8 @@ stages:
       runOnce:
         deploy:
           steps:
-          - task: DownloadPackage@1
-            inputs:
-              packageType: 'nuget'
-              feed: '40f82a44-ccb3-4b97-b78a-4f61f521b9c3/e3313fb1-271b-4c42-99cc-f1a0935904b2'
-              view: 
-              definition: '78984812-5c9b-4eff-9921-788f5c47e716'
-              version: $buildVersion
-              extract: false
-              downloadPath: '$(Pipeline.Workspace)/'
+          - download: current
+            artifact: Helpful.Hosting.Windows.Service.Core
           - task: DotNetCoreCLI@2
             displayName: 'dotnet push'
             inputs:
