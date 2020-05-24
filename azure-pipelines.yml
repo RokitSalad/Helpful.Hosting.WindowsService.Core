@@ -70,6 +70,6 @@ stages:
             displayName: 'dotnet push'
             inputs:
               command: 'push'              
-              packagesToPush: '$(Pipeline.Workspace)/*.nupkg'
+              packagesToPush: '$(Pipeline.Workspace)/**/*.nupkg'
               nuGetFeedType: 'external'
               publishFeedCredentials: 'Nuget.org'
