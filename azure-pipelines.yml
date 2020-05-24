@@ -67,9 +67,13 @@ stages:
           - download: current
             artifact: Helpful.Hosting.Windows.Service.Core
           - task: DotNetCoreCLI@2
-            displayName: 'dotnet push'
+            displayName: 'nuget push'
             inputs:
-              command: 'push'              
-              packagesToPush: '$(Pipeline.Workspace)/**/*.nupkg'
-              nuGetFeedType: 'external'
-              publishFeedCredentials: 'Nuget.org'
+              command: custom
+              custom: nuget
+              arguments: >
+                push $(Pipeline.Workspace)/**/*.nupkg
+                -s $(NugetOrgServerUrl)
+                -k $(NugetOrgApiKey)
+
+          
