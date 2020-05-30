@@ -5,11 +5,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Helpful.Hosting.WindowsService.Core
 {
-    public class Startup
+    public class DefaultStartup
     {
         public IConfiguration Configuration { get; }
 
-        public Startup(IConfiguration configuration)
+        public DefaultStartup(IConfiguration configuration)
         {
             Configuration = configuration;
         }

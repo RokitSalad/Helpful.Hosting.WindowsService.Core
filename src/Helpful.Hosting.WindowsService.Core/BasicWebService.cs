@@ -4,7 +4,7 @@ using Topshelf;
 
 namespace Helpful.Hosting.WindowsService.Core
 {
-    public class BasicWebService : BasicWebService<Startup>
+    public class BasicWebService : BasicWebService<DefaultStartup>
     {
         public BasicWebService(params string[] urls) : base(urls)
         {
