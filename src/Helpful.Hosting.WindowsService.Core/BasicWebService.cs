@@ -22,14 +22,14 @@ namespace Helpful.Hosting.WindowsService.Core
             _urls = urls;
         }
 
-        public bool Start(HostControl hostControl)
+        public virtual bool Start(HostControl hostControl)
         {
             WebServiceHolder = CreateHostBuilder(_urls, null).Build();
             WebServiceHolder.StartAsync();
             return true;
         }
 
-        public bool Stop(HostControl hostControl)
+        public virtual bool Stop(HostControl hostControl)
         {
             WebServiceHolder.StopAsync();
             return true;
