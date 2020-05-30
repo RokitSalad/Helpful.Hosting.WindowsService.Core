@@ -4,7 +4,15 @@ using Topshelf;
 
 namespace Helpful.Hosting.WindowsService.Core
 {
-    public class BasicWebService : ServiceControl
+    public class BasicWebService : BasicWebService<Startup>
+    {
+        public BasicWebService(params string[] urls) : base(urls)
+        {
+
+        }
+    }
+
+    public class BasicWebService<T> : ServiceControl where T : class
     {
         private readonly string[] _urls;
         private static IHost WebServiceHolder { get; set; }
@@ -31,7 +39,7 @@ namespace Helpful.Hosting.WindowsService.Core
             Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder.UseStartup<T>();
                     webBuilder.UseUrls(urls);
                 });
     }

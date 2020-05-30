@@ -1,15 +1,16 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Helpful.Hosting.WindowsService.Core;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Helpful.Hosting.WindowsService.Core
+namespace DemoService
 {
-    public class Startup
+    class CustomStartup
     {
         public IConfiguration Configuration { get; }
 
-        public Startup(IConfiguration configuration)
+        public CustomStartup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
@@ -18,6 +19,7 @@ namespace Helpful.Hosting.WindowsService.Core
         public void ConfigureServices(IServiceCollection services)
         {
             BasicConfiguration.ConfigureBasicServices(services);
+            // Add your additional service setup code here
         }
 
 
@@ -25,6 +27,7 @@ namespace Helpful.Hosting.WindowsService.Core
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             BasicConfiguration.Configure(app, env);
+            // Add your additional configuration code here
         }
     }
 }
