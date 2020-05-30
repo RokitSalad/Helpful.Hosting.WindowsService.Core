@@ -5,6 +5,7 @@
 
 trigger:
 - master
+- dev
 
 pool:
   vmImage: 'windows-latest'
@@ -14,64 +15,69 @@ variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
-stages:
-- stage: Dev
-  jobs:
-  - job: Build
-    steps:
+jobs:
 
-    - task: DotNetCoreCLI@2
-      displayName: 'dotnet restore'
-      inputs:
-        command: 'restore'
-        feedsToUse: 'select'
-        projects: '**/*.csproj'
+- job: build
+  steps:
 
-    - task: DotNetCoreCLI@2
-      displayName: 'dotnet build'
-      inputs:
-        command: 'build'
-        projects: '**/*.csproj'
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet restore'
+    inputs:
+      command: 'restore'
+      feedsToUse: 'select'
+      projects: '**/*.csproj'
 
-  - deployment: PublishLocal
-    environment: Development
-    displayName: 'Publish to Artefacts'
-    dependsOn: Build
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - task: DotNetCoreCLI@2
-            displayName: 'dotnet pack'
-            inputs:
-              command: 'pack'
-              packagesToPack: '**/*.csproj'
-              nobuild: true
-              versioningScheme: 'byBuildNumber'
-              verbosityPack: 'Diagnostic'
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet build'
+    inputs:
+      command: 'build'
+      projects: '**/*.csproj'
 
-          - task: DotNetCoreCLI@2
-            displayName: 'dotnet push'
-            inputs:              
-              command: 'push'
-              packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
-              nuGetFeedType: 'internal'
-              publishVstsFeed: '03d48210-1522-48ae-a74a-2cc9bf61d73c'
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet pack'
+    inputs:
+      command: 'pack'
+      packagesToPack: '**/Helpful.Hosting.WindowsService.Core.csproj'
+      versioningScheme: 'byBuildNumber'
+      verbosityPack: 'Diagnostic'
 
-- stage: Release
-  dependsOn: Dev
-  jobs:
-  - deployment: PublishPublic
-    displayName: 'Publish to Nuget.org'
-    environment: 'Public Nuget'
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - task: DotNetCoreCLI@2
-            displayName: 'dotnet push'
-            inputs:
-              command: 'push'              
-              packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
-              nuGetFeedType: 'external'
-              publishFeedCredentials: 'Nuget.org'
+  - publish: '$(Build.ArtifactStagingDirectory)'
+    artifact: Helpful.Hosting.WindowsService.Core
+  
+- job: PublishLocal
+  displayName: Publish to local feed
+  dependsOn: Build
+  condition: succeeded()
+  steps:
+
+  - download: current
+    displayName: Retrieve artifact
+    artifact: Helpful.Hosting.WindowsService.Core
+
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet push'
+    inputs:
+      command: 'push'
+      packagesToPush: '$(Pipeline.Workspace)/**/*.nupkg'
+      nuGetFeedType: 'internal'
+      publishVstsFeed: '40f82a44-ccb3-4b97-b78a-4f61f521b9c3/e3313fb1-271b-4c42-99cc-f1a0935904b2'
+
+- job: PublishPublic
+  displayName: Publish to Nuget.org
+  dependsOn: Build
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
+  steps:
+
+  - download: current
+    displayName: Retrieve artifact
+    artifact: Helpful.Hosting.WindowsService.Core
+
+  - task: DotNetCoreCLI@2
+    displayName: 'nuget push'
+    inputs:
+      command: custom
+      custom: nuget
+      arguments: >
+        push $(Pipeline.Workspace)/**/*.nupkg
+        -s $(NugetOrgServerUrl)
+        -k $(NugetOrgApiKey)
