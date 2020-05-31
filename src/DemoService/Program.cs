@@ -1,6 +1,4 @@
-﻿using System;
-using Helpful.Hosting.WindowsService.Core;
-using Topshelf;
+﻿using Helpful.Hosting.WindowsService.Core;
 
 namespace DemoService
 {
