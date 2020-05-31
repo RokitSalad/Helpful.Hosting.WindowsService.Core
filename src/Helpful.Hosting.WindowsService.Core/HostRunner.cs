@@ -3,7 +3,15 @@ using Topshelf;
 
 namespace Helpful.Hosting.WindowsService.Core
 {
-    public class HostRunner
+    public class HostRunner : HostRunner<DefaultStartup>
+    {
+        public HostRunner(string serviceName, int port) : base(serviceName, port)
+        {
+            
+        }
+    }
+
+    public class HostRunner<TStartup> where TStartup : class
     {
         private readonly string _serviceName;
         private readonly int _port;
@@ -22,11 +30,11 @@ namespace Helpful.Hosting.WindowsService.Core
                     (
                         x =>
                         {
-                            x.Service<BasicWebService>
+                            x.Service<BasicWebService<TStartup>>
                                 (
                                     s =>
                                     {
-                                        s.ConstructUsing(svc => new BasicWebService($"http://*:{_port}"));
+                                        s.ConstructUsing(svc => new BasicWebService<TStartup>($"http://*:{_port}"));
                                         s.WhenStarted((ts, hc) => ts.Start(hc));
                                         s.WhenStopped((ts, hc) => ts.Stop(hc));
                                     }

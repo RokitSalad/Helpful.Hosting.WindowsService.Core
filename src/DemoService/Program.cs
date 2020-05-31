@@ -8,7 +8,7 @@ namespace DemoService
     {
         static void Main(string[] args)
         {
-            var runner = new Helpful.Hosting.WindowsService.Core.HostRunner("DemoService", 5001);
+            var runner = new HostRunner<CustomStartup>("DemoService", 5001);
             var exit = runner.Run();
         }
     }
