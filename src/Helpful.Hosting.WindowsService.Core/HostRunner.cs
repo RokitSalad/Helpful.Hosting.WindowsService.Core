@@ -6,7 +6,7 @@ namespace Helpful.Hosting.WindowsService.Core
 {
     public class HostRunner : HostRunner<DefaultStartup>
     {
-        public HostRunner(string serviceName, int port) : base(serviceName, port)
+        public HostRunner(string serviceName, params string[] urls) : base(serviceName, urls)
         {
             
         }
@@ -15,22 +15,22 @@ namespace Helpful.Hosting.WindowsService.Core
     public class HostRunner<TStartup> where TStartup : class
     {
         private readonly string _serviceName;
-        private readonly int _port;
+        private readonly string[] _urls;
 
-        public HostRunner(string serviceName, int port)
+        public HostRunner(string serviceName, params string[] urls)
         {
             _serviceName = serviceName;
-            _port = port;
+            _urls = urls;
         }
 
         public TopshelfExitCode RunWebService()
         {
-            return Run(new BasicWebService<TStartup>($"http://*:{_port}"));
+            return Run(new BasicWebService<TStartup>(_urls));
         }
 
         public TopshelfExitCode RunCompoundService(Action<object> singleRun, object state, int scheduleMilliseconds)
         {
-            return Run(new TimerService<TStartup>(singleRun, state, scheduleMilliseconds, $"http://*:{_port}"));
+            return Run(new TimerService<TStartup>(singleRun, state, scheduleMilliseconds, _urls));
         }
 
         public TopshelfExitCode Run(BasicWebService<TStartup> service)
