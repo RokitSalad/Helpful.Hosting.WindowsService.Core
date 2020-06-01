@@ -3,7 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpful.Hosting.WindowsService.Core", "Helpful.Hosting.WindowsService.Core.csproj", "{FBF279F2-F0C0-4FB2-ADBC-D6BA6629FDBC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helpful.Hosting.WindowsService.Core", "Helpful.Hosting.WindowsService.Core.csproj", "{FBF279F2-F0C0-4FB2-ADBC-D6BA6629FDBC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3F3D148C-CB31-4DB2-924A-38551E6EC1D7}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\azure-pipelines.yml = ..\..\azure-pipelines.yml
+		..\..\README.md = ..\..\README.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DemoService", "..\DemoService\DemoService.csproj", "{4153E52D-EE83-477F-9816-153B72E7897D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DemoServiceQuickStartApi", "..\DemoServiceQuickStartApi\DemoServiceQuickStartApi.csproj", "{6FE061B2-5088-4A92-843E-CC74DE23401B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoServiceBackgroundProcess", "..\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.csproj", "{B3BC762C-7362-42DE-9C7F-28D0BFC3BB03}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +27,18 @@ Global
 		{FBF279F2-F0C0-4FB2-ADBC-D6BA6629FDBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FBF279F2-F0C0-4FB2-ADBC-D6BA6629FDBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FBF279F2-F0C0-4FB2-ADBC-D6BA6629FDBC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4153E52D-EE83-477F-9816-153B72E7897D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4153E52D-EE83-477F-9816-153B72E7897D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4153E52D-EE83-477F-9816-153B72E7897D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4153E52D-EE83-477F-9816-153B72E7897D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FE061B2-5088-4A92-843E-CC74DE23401B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FE061B2-5088-4A92-843E-CC74DE23401B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FE061B2-5088-4A92-843E-CC74DE23401B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FE061B2-5088-4A92-843E-CC74DE23401B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3BC762C-7362-42DE-9C7F-28D0BFC3BB03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3BC762C-7362-42DE-9C7F-28D0BFC3BB03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3BC762C-7362-42DE-9C7F-28D0BFC3BB03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3BC762C-7362-42DE-9C7F-28D0BFC3BB03}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -4,29 +4,43 @@ using Topshelf;
 
 namespace Helpful.Hosting.WindowsService.Core
 {
-    public class BasicWebService : ServiceControl
+    public class BasicWebService : BasicWebService<DefaultStartup>
     {
-        private static IHost WebAppHolder { get; set; }
-
-        public bool Start(HostControl hostControl)
+        public BasicWebService(params string[] urls) : base(urls)
         {
-            WebAppHolder = CreateHostBuilder(null).Build();
-            WebAppHolder.StartAsync();
+
+        }
+    }
+
+    public class BasicWebService<T> : ServiceControl where T : class
+    {
+        private readonly string[] _urls;
+        private static IHost WebServiceHolder { get; set; }
+
+        public BasicWebService(params string[] urls)
+        {
+            _urls = urls;
+        }
+
+        public virtual bool Start(HostControl hostControl)
+        {
+            WebServiceHolder = CreateHostBuilder(_urls, null).Build();
+            WebServiceHolder.StartAsync();
             return true;
         }
 
-        public bool Stop(HostControl hostControl)
+        public virtual bool Stop(HostControl hostControl)
         {
-            WebAppHolder.StopAsync();
+            WebServiceHolder.StopAsync();
             return true;
         }
 
-        private static IHostBuilder CreateHostBuilder(string[] args) =>
+        private static IHostBuilder CreateHostBuilder(string[] urls, string[] args) =>
             Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
-                    webBuilder.UseUrls("http://localhost:5001/");
+                    webBuilder.UseStartup<T>();
+                    webBuilder.UseUrls(urls);
                 });
     }
 }
