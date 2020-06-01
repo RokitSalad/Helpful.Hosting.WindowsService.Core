@@ -1,5 +1,6 @@
 ﻿using System;
 using Topshelf;
+using Topshelf.Runtime;
 
 namespace Helpful.Hosting.WindowsService.Core
 {
@@ -22,7 +23,17 @@ namespace Helpful.Hosting.WindowsService.Core
             _port = port;
         }
 
-        public TopshelfExitCode Run()
+        public TopshelfExitCode RunWebService()
+        {
+            return Run(new BasicWebService<TStartup>($"http://*:{_port}"));
+        }
+
+        public TopshelfExitCode RunCompoundService(Action<object> singleRun, object state, int scheduleMilliseconds)
+        {
+            return Run(new TimerService<TStartup>(singleRun, state, scheduleMilliseconds, $"http://*:{_port}"));
+        }
+
+        public TopshelfExitCode Run(BasicWebService<TStartup> service)
         {
             try
             {
@@ -34,7 +45,7 @@ namespace Helpful.Hosting.WindowsService.Core
                                 (
                                     s =>
                                     {
-                                        s.ConstructUsing(svc => new BasicWebService<TStartup>($"http://*:{_port}"));
+                                        s.ConstructUsing(svc => service);
                                         s.WhenStarted((ts, hc) => ts.Start(hc));
                                         s.WhenStopped((ts, hc) => ts.Stop(hc));
                                     }

@@ -9,7 +9,7 @@ namespace DemoServiceQuickStartApi
         static void Main(string[] args)
         {
             var runner = new HostRunner("DemoService_QuickStartApi", 5002);
-            var exit = runner.Run();
+            var exit = runner.RunWebService();
         }
     }
 }

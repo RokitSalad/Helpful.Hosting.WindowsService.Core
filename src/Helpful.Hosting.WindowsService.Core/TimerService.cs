@@ -15,7 +15,7 @@ namespace Helpful.Hosting.WindowsService.Core
     {
         private readonly Timer _timer;
 
-        public TimerService(Action<object> singleRun, object state, int scheduleMilliseconds)
+        public TimerService(Action<object> singleRun, object state, int scheduleMilliseconds, params string[] urls) : base(urls)
         {
             _timer = new Timer(scheduleMilliseconds)
             {
