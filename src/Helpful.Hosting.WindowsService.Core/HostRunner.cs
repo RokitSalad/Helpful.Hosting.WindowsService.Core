@@ -1,6 +1,6 @@
 ﻿using System;
+using Helpful.Logging.Standard;
 using Topshelf;
-using Topshelf.Runtime;
 
 namespace Helpful.Hosting.WindowsService.Core
 {
@@ -37,34 +37,45 @@ namespace Helpful.Hosting.WindowsService.Core
         {
             try
             {
+                ConfigureLogger.StandardSetup();
                 return HostFactory.Run
-                    (
-                        x =>
-                        {
-                            x.Service<BasicWebService<TStartup>>
-                                (
-                                    s =>
-                                    {
-                                        s.ConstructUsing(svc => service);
-                                        s.WhenStarted((ts, hc) => ts.Start(hc));
-                                        s.WhenStopped((ts, hc) => ts.Stop(hc));
-                                    }
-                                );
+                (
+                    x =>
+                    {
+                        x.Service<BasicWebService<TStartup>>
+                        (
+                            s =>
+                            {
+                                s.ConstructUsing(svc => service);
+                                s.WhenStarted((ts, hc) => ts.Start(hc));
+                                s.WhenStopped((ts, hc) => ts.Stop(hc));
+                            }
+                        );
 
-                            x.SetServiceName(_serviceName);
-                            x.SetDisplayName(_serviceName);
-                            x.SetDescription(_serviceName);
-                            x.EnableShutdown();
-                            x.RunAsLocalSystem();
-                        }
-                    );
+                        x.SetServiceName(_serviceName);
+                        x.SetDisplayName(_serviceName);
+                        x.SetDescription(_serviceName);
+                        x.EnableShutdown();
+                        x.RunAsLocalSystem();
+                    }
+                );
             }
-            catch (AggregateException)
+            catch (HelpfulLoggingConfigurationException)
             {
+                throw;
+            }
+            catch (AggregateException ae)
+            {
+                ae.Handle((e) =>
+                {
+                    this.GetLogger().LogFatalWithContext(e, "Fatal exception while attempting to start service.");
+                    return true;
+                });
                 return TopshelfExitCode.AbnormalExit;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                this.GetLogger().LogFatalWithContext(e, "Fatal exception while attempting to start service.");
                 return TopshelfExitCode.AbnormalExit;
             }
         }
