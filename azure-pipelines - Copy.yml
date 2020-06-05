@@ -199,6 +199,21 @@ jobs:
             failOnStderr: true
             pwsh: true
 
+- deployment: IntegrationTest
+  displayName: Deploy and integration test
+  dependsOn: BuildDemoService DemoServiceQuickStartApi BuildDemoServiceBackgroundProcess
+  condition: succeeded()
+  environment:
+    name:  IntegrationTesting-EC2
+    resourceType: VirtualMachine
+    tags: service
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+
+ 
+  
 - job: PublishLocal
   displayName: Publish to local feed
   dependsOn: Build
