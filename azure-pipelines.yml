@@ -216,7 +216,7 @@ jobs:
       zipAfterPublish: True
   
   - publish: '$(Build.ArtifactStagingDirectory)/DemoServiceQuickStartApi'
-    artifact: DemoService
+    artifact: DemoServiceQuickStartApi
 
 - deployment: VMDeploy_DemoServiceQuickStartApi
   displayName: Deploy DemoServiceBackgroundProcess to IntegrationTesting
