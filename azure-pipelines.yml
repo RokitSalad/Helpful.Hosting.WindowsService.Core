@@ -219,8 +219,8 @@ jobs:
     artifact: DemoServiceQuickStartApi
 
 - deployment: VMDeploy_DemoServiceQuickStartApi
-  displayName: Deploy DemoServiceBackgroundProcess to IntegrationTesting
-  dependsOn: BuildDemoServiceBackgroundProcess
+  displayName: Deploy DemoServiceQuickStartApi to IntegrationTesting
+  dependsOn: BuildDemoServiceQuickStartApi
   condition: succeeded()
   environment:
     name: IntegrationTesting-EC2
@@ -232,8 +232,8 @@ jobs:
         steps:
 
         - download: current
-          displayName: Download DemoServiceBackgroundProcess
-          artifact: 'DemoServiceBackgroundProcess'
+          displayName: Download DemoServiceQuickStartApi
+          artifact: 'DemoServiceQuickStartApi'
 
         - task: PowerShell@2
           displayName: Clean up existing service
@@ -242,9 +242,9 @@ jobs:
             script: |
               # Write your PowerShell commands here.
       
-              & $AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.exe stop
+              & $AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi\DemoServiceQuickStartApi.exe stop
               Start-Sleep -Seconds 5
-              & $$AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.exe uninstall
+              & $$AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi\DemoServiceQuickStartApi.exe uninstall
               Start-Sleep -Seconds 5
             errorActionPreference: 'continue'
 
@@ -255,11 +255,11 @@ jobs:
             script: |
               # Write your PowerShell commands here.
       
-              Remove-Item "$AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess" -recurse -force
-              Expand-Archive $(Pipeline.Workspace)\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.zip -DestinationPath "$AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\"
-              & $AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.exe install
+              Remove-Item "$AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi" -recurse -force
+              Expand-Archive $(Pipeline.Workspace)\DemoServiceQuickStartApi\DemoServiceQuickStartApi.zip -DestinationPath "$AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi\"
+              & $AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi\DemoServiceQuickStartApi.exe install
               Start-Sleep -Seconds 5
-              & $AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.exe start
+              & $AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi\DemoServiceQuickStartApi.exe start
             errorActionPreference: 'stop'
 
 - job: PublishLocal
