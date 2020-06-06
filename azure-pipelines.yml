@@ -17,285 +17,299 @@ variables:
   buildConfiguration: 'Release'
   buildVersion: 1.0.$(Rev:r)
 
-jobs:
+stages:
 
-- job: build
-  steps:
+- stage: BuildandPackage
+  displayName: Build and Package
+  jobs:
 
-  - task: DotNetCoreCLI@2
-    displayName: 'dotnet restore'
-    inputs:
-      command: 'restore'
-      feedsToUse: 'select'
-      projects: '**/Helpful.Hosting.WindowsService.Core.csproj'
+  - job: build
+    steps:
 
-  - task: DotNetCoreCLI@2
-    displayName: 'dotnet build'
-    inputs:
-      command: 'build'
-      projects: '**/Helpful.Hosting.WindowsService.Core.csproj'
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet restore'
+        inputs:
+          command: 'restore'
+          feedsToUse: 'select'
+          projects: '**/Helpful.Hosting.WindowsService.Core.csproj'
 
-  - task: DotNetCoreCLI@2
-    displayName: 'dotnet pack'
-    inputs:
-      command: 'pack'
-      packagesToPack: '**/Helpful.Hosting.WindowsService.Core.csproj'
-      versioningScheme: 'byBuildNumber'
-      verbosityPack: 'Diagnostic'
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet build'
+        inputs:
+          command: 'build'
+          projects: '**/Helpful.Hosting.WindowsService.Core.csproj'
 
-  - publish: '$(Build.ArtifactStagingDirectory)'
-    artifact: Helpful.Hosting.WindowsService.Core
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet pack'
+        inputs:
+          command: 'pack'
+          packagesToPack: '**/Helpful.Hosting.WindowsService.Core.csproj'
+          versioningScheme: 'byBuildNumber'
+          verbosityPack: 'Diagnostic'
 
-- job: BuildDemoService
-  displayName: Build DemoService
-  steps:
+      - publish: '$(Build.ArtifactStagingDirectory)'
+        artifact: Helpful.Hosting.WindowsService.Core
+
+    - job: BuildDemoService
+      displayName: Build DemoService
+      steps:
   
-  - task: DotNetCoreCLI@2
-    displayName: 'dotnet restore'
-    inputs:
-      command: 'restore'
-      feedsToUse: 'select'
-      projects: '**/*.csproj'
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet restore'
+        inputs:
+          command: 'restore'
+          feedsToUse: 'select'
+          projects: '**/*.csproj'
 
-  - task: DotNetCoreCLI@2
-    displayName: 'dotnet build'
-    inputs:
-      command: 'build'
-      projects: '**/DemoService.csproj'
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet build'
+        inputs:
+          command: 'build'
+          projects: '**/DemoService.csproj'
 
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: 'publish'
-      arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/DemoService/'
-      publishWebProjects: false
-      projects: '**/DemoService.csproj'
-      zipAfterPublish: True
+      - task: DotNetCoreCLI@2
+        inputs:
+          command: 'publish'
+          arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/DemoService/'
+          publishWebProjects: false
+          projects: '**/DemoService.csproj'
+          zipAfterPublish: True
   
-  - publish: '$(Build.ArtifactStagingDirectory)\DemoService'
-    artifact: DemoService
+      - publish: '$(Build.ArtifactStagingDirectory)\DemoService'
+        artifact: DemoService
 
-- deployment: VMDeploy_BuildDemoService
-  displayName: Deploy DemoService to IntegrationTesting
-  dependsOn: BuildDemoService
+    - job: BuildDemoServiceBackgroundProcess
+      displayName: Build DemoService BackgroundProcess
+      steps:
+    
+      - task: DotNetCoreCLI@2
+      displayName: 'dotnet restore'
+      inputs:
+          command: 'restore'
+          feedsToUse: 'select'
+          projects: '**/*.csproj'
+    
+      - task: DotNetCoreCLI@2
+      displayName: 'dotnet build'
+      inputs:
+          command: 'build'
+          projects: '**/DemoServiceBackgroundProcess.csproj'
+    
+      - task: DotNetCoreCLI@2
+      inputs:
+          command: 'publish'
+          arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/DemoServiceBackgroundProcess/'
+          publishWebProjects: false
+          projects: '**/DemoServiceBackgroundProcess.csproj'
+          zipAfterPublish: True
+    
+      - publish: '$(Build.ArtifactStagingDirectory)\DemoServiceBackgroundProcess'
+      artifact: DemoServiceBackgroundProcess
+
+    - job: BuildDemoServiceQuickStartApi
+      displayName: Build DemoService QuickStartApi
+      steps:
+      
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet restore'
+        inputs:
+          command: 'restore'
+          feedsToUse: 'select'
+          projects: '**/*.csproj'
+    
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet build'
+        inputs:
+          command: 'build'
+          projects: '**/DemoServiceQuickStartApi.csproj'
+    
+      - task: DotNetCoreCLI@2
+        inputs:
+          command: 'publish'
+          arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/DemoServiceQuickStartApi/'
+          publishWebProjects: false
+          projects: '**/DemoServiceQuickStartApi.csproj'
+          zipAfterPublish: True
+      
+      - publish: '$(Build.ArtifactStagingDirectory)\DemoServiceQuickStartApi'
+        artifact: DemoServiceQuickStartApi
+
+- stage: test
+  dependsOn: BuildandPackage
   condition: succeeded()
-  environment:
-    name: IntegrationTesting-EC2
-    resourceType: VirtualMachine
-    tags: service
-  strategy:
-    runOnce:
-      deploy:
-        steps:
+  jobs:
 
-        - download: current
-          displayName: Download DemoService
-          artifact: 'DemoService'
-
-        - task: PowerShell@2
-          displayName: Clean up existing service
-          inputs:
-            targetType: 'inline'
-            script: |
-              # Write your PowerShell commands here.
-      
-              & $AZDO_APP_INSTALL_PATH\DemoService\DemoService.exe stop
-              Start-Sleep -Seconds 5
-              & $AZDO_APP_INSTALL_PATH\DemoService\DemoService.exe uninstall
-              Start-Sleep -Seconds 5
-            errorActionPreference: 'continue'
-
-        - task: PowerShell@2
-          displayName: Install new service
-          inputs:
-            targetType: 'inline'
-            script: |
-              # Write your PowerShell commands here.
-      
-              Remove-Item "$AZDO_APP_INSTALL_PATH\DemoService" -recurse -force -ErrorAction Ignore
-              Expand-Archive $(Pipeline.Workspace)\DemoService\DemoService.zip -DestinationPath "$AZDO_APP_INSTALL_PATH\DemoService\"
-              & $AZDO_APP_INSTALL_PATH\DemoService\DemoService.exe install
-              Start-Sleep -Seconds 5
-              & $AZDO_APP_INSTALL_PATH\DemoService\DemoService.exe start
-            errorActionPreference: 'stop'
-
-- job: BuildDemoServiceBackgroundProcess
-  displayName: Build DemoService BackgroundProcess
-  steps:
+  - deployment: VMDeploy_BuildDemoService
+    displayName: Deploy DemoService to IntegrationTesting
+    dependsOn: BuildDemoService
+    condition: succeeded()
+    environment:
+      name: IntegrationTesting-EC2
+      resourceType: VirtualMachine
+      tags: service
+    strategy:
+      runOnce:
+        deploy:
+          steps:
   
-  - task: DotNetCoreCLI@2
-    displayName: 'dotnet restore'
-    inputs:
-      command: 'restore'
-      feedsToUse: 'select'
-      projects: '**/*.csproj'
-
-  - task: DotNetCoreCLI@2
-    displayName: 'dotnet build'
-    inputs:
-      command: 'build'
-      projects: '**/DemoServiceBackgroundProcess.csproj'
-
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: 'publish'
-      arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/DemoServiceBackgroundProcess/'
-      publishWebProjects: false
-      projects: '**/DemoServiceBackgroundProcess.csproj'
-      zipAfterPublish: True
+          - download: current
+            displayName: Download DemoService
+            artifact: 'DemoService'
   
-  - publish: '$(Build.ArtifactStagingDirectory)\DemoServiceBackgroundProcess'
-    artifact: DemoServiceBackgroundProcess
+          - task: PowerShell@2
+            displayName: Clean up existing service
+            inputs:
+              targetType: 'inline'
+              script: |
+                # Write your PowerShell commands here.
+        
+                & $AZDO_APP_INSTALL_PATH\DemoService\DemoService.exe stop
+                Start-Sleep -Seconds 5
+                & $AZDO_APP_INSTALL_PATH\DemoService\DemoService.exe uninstall
+                Start-Sleep -Seconds 5
+              errorActionPreference: 'continue'
+  
+          - task: PowerShell@2
+            displayName: Install new service
+            inputs:
+              targetType: 'inline'
+              script: |
+                # Write your PowerShell commands here.
+        
+                Remove-Item "$AZDO_APP_INSTALL_PATH\DemoService" -recurse -force -ErrorAction Ignore
+                Expand-Archive $(Pipeline.Workspace)\DemoService\DemoService.zip -DestinationPath "$AZDO_APP_INSTALL_PATH\DemoService\"
+                & $AZDO_APP_INSTALL_PATH\DemoService\DemoService.exe install
+                Start-Sleep -Seconds 5
+                & $AZDO_APP_INSTALL_PATH\DemoService\DemoService.exe start
+              errorActionPreference: 'stop'
 
-- deployment: VMDeploy_DemoServiceBackgroundProcess
-  displayName: Deploy DemoServiceBackgroundProcess to IntegrationTesting
-  dependsOn: BuildDemoServiceBackgroundProcess
+  - deployment: VMDeploy_DemoServiceBackgroundProcess
+    displayName: Deploy DemoServiceBackgroundProcess to IntegrationTesting
+    dependsOn: BuildDemoServiceBackgroundProcess
+    condition: succeeded()
+    environment:
+      name: IntegrationTesting-EC2
+      resourceType: VirtualMachine
+      tags: service
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+  
+          - download: current
+            displayName: Download DemoServiceBackgroundProcess
+            artifact: 'DemoServiceBackgroundProcess'
+  
+          - task: PowerShell@2
+            displayName: Clean up existing service
+            inputs:
+              targetType: 'inline'
+              script: |
+                # Write your PowerShell commands here.
+        
+                & $AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.exe stop
+                Start-Sleep -Seconds 5
+                & $AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.exe uninstall
+                Start-Sleep -Seconds 5
+              errorActionPreference: 'continue'
+  
+          - task: PowerShell@2
+            displayName: Install new service
+            inputs:
+              targetType: 'inline'
+              script: |
+                # Write your PowerShell commands here.
+        
+                Remove-Item "$AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess" -recurse -force -ErrorAction Ignore
+                Expand-Archive $(Pipeline.Workspace)\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.zip -DestinationPath "$AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\"
+                & $AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.exe install
+                Start-Sleep -Seconds 5
+                & $AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.exe start
+              errorActionPreference: 'stop'
+
+  - deployment: VMDeploy_DemoServiceQuickStartApi
+    displayName: Deploy DemoServiceQuickStartApi to IntegrationTesting
+    dependsOn: BuildDemoServiceQuickStartApi
+    condition: succeeded()
+    environment:
+      name: IntegrationTesting-EC2
+      resourceType: VirtualMachine
+      tags: service
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+  
+          - download: current
+            displayName: Download DemoServiceQuickStartApi
+            artifact: 'DemoServiceQuickStartApi'
+  
+          - task: PowerShell@2
+            displayName: Clean up existing service
+            inputs:
+              targetType: 'inline'
+              script: |
+                # Write your PowerShell commands here.
+        
+                & $AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi\DemoServiceQuickStartApi.exe stop
+                Start-Sleep -Seconds 5
+                & $$AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi\DemoServiceQuickStartApi.exe uninstall
+                Start-Sleep -Seconds 5
+              errorActionPreference: 'continue'
+  
+          - task: PowerShell@2
+            displayName: Install new service
+            inputs:
+              targetType: 'inline'
+              script: |
+                # Write your PowerShell commands here.
+        
+                Remove-Item "$AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi" -recurse -force -ErrorAction Ignore
+                Expand-Archive $(Pipeline.Workspace)\DemoServiceQuickStartApi\DemoServiceQuickStartApi.zip -DestinationPath "$AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi\"
+                & $AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi\DemoServiceQuickStartApi.exe install
+                Start-Sleep -Seconds 5
+                & $AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi\DemoServiceQuickStartApi.exe start
+              errorActionPreference: 'stop'
+
+- stage: Publish
+  dependsOn: test
   condition: succeeded()
-  environment:
-    name: IntegrationTesting-EC2
-    resourceType: VirtualMachine
-    tags: service
-  strategy:
-    runOnce:
-      deploy:
-        steps:
+  jobs:
 
-        - download: current
-          displayName: Download DemoServiceBackgroundProcess
-          artifact: 'DemoServiceBackgroundProcess'
-
-        - task: PowerShell@2
-          displayName: Clean up existing service
-          inputs:
-            targetType: 'inline'
-            script: |
-              # Write your PowerShell commands here.
-      
-              & $AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.exe stop
-              Start-Sleep -Seconds 5
-              & $AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.exe uninstall
-              Start-Sleep -Seconds 5
-            errorActionPreference: 'continue'
-
-        - task: PowerShell@2
-          displayName: Install new service
-          inputs:
-            targetType: 'inline'
-            script: |
-              # Write your PowerShell commands here.
-      
-              Remove-Item "$AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess" -recurse -force -ErrorAction Ignore
-              Expand-Archive $(Pipeline.Workspace)\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.zip -DestinationPath "$AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\"
-              & $AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.exe install
-              Start-Sleep -Seconds 5
-              & $AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.exe start
-            errorActionPreference: 'stop'
-
-- job: BuildDemoServiceQuickStartApi
-  displayName: Build DemoService QuickStartApi
-  steps:
+  - job: PublishLocal
+    displayName: Publish to local feed
+    dependsOn: Build
+    condition: succeeded()
+    steps:
   
-  - task: DotNetCoreCLI@2
-    displayName: 'dotnet restore'
-    inputs:
-      command: 'restore'
-      feedsToUse: 'select'
-      projects: '**/*.csproj'
-
-  - task: DotNetCoreCLI@2
-    displayName: 'dotnet build'
-    inputs:
-      command: 'build'
-      projects: '**/DemoServiceQuickStartApi.csproj'
-
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: 'publish'
-      arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/DemoServiceQuickStartApi/'
-      publishWebProjects: false
-      projects: '**/DemoServiceQuickStartApi.csproj'
-      zipAfterPublish: True
+    - download: current
+      displayName: Retrieve artifact
+      artifact: Helpful.Hosting.WindowsService.Core
   
-  - publish: '$(Build.ArtifactStagingDirectory)\DemoServiceQuickStartApi'
-    artifact: DemoServiceQuickStartApi
-
-- deployment: VMDeploy_DemoServiceQuickStartApi
-  displayName: Deploy DemoServiceQuickStartApi to IntegrationTesting
-  dependsOn: BuildDemoServiceQuickStartApi
-  condition: succeeded()
-  environment:
-    name: IntegrationTesting-EC2
-    resourceType: VirtualMachine
-    tags: service
-  strategy:
-    runOnce:
-      deploy:
-        steps:
-
-        - download: current
-          displayName: Download DemoServiceQuickStartApi
-          artifact: 'DemoServiceQuickStartApi'
-
-        - task: PowerShell@2
-          displayName: Clean up existing service
-          inputs:
-            targetType: 'inline'
-            script: |
-              # Write your PowerShell commands here.
-      
-              & $AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi\DemoServiceQuickStartApi.exe stop
-              Start-Sleep -Seconds 5
-              & $$AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi\DemoServiceQuickStartApi.exe uninstall
-              Start-Sleep -Seconds 5
-            errorActionPreference: 'continue'
-
-        - task: PowerShell@2
-          displayName: Install new service
-          inputs:
-            targetType: 'inline'
-            script: |
-              # Write your PowerShell commands here.
-      
-              Remove-Item "$AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi" -recurse -force -ErrorAction Ignore
-              Expand-Archive $(Pipeline.Workspace)\DemoServiceQuickStartApi\DemoServiceQuickStartApi.zip -DestinationPath "$AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi\"
-              & $AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi\DemoServiceQuickStartApi.exe install
-              Start-Sleep -Seconds 5
-              & $AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi\DemoServiceQuickStartApi.exe start
-            errorActionPreference: 'stop'
-
-- job: PublishLocal
-  displayName: Publish to local feed
-  dependsOn: Build
-  condition: succeeded()
-  steps:
-
-  - download: current
-    displayName: Retrieve artifact
-    artifact: Helpful.Hosting.WindowsService.Core
-
-  - task: DotNetCoreCLI@2
-    displayName: 'dotnet push'
-    inputs:
-      command: 'push'
-      packagesToPush: '$(Pipeline.Workspace)/**/*.nupkg'
-      nuGetFeedType: 'internal'
-      publishVstsFeed: '40f82a44-ccb3-4b97-b78a-4f61f521b9c3/e3313fb1-271b-4c42-99cc-f1a0935904b2'
-
-- job: PublishPublic
-  displayName: Publish to Nuget.org
-  dependsOn: Build
-  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
-  steps:
-
-  - download: current
-    displayName: Retrieve artifact
-    artifact: Helpful.Hosting.WindowsService.Core
-
-  - task: DotNetCoreCLI@2
-    displayName: 'nuget push'
-    inputs:
-      command: custom
-      custom: nuget
-      arguments: >
-        push $(Pipeline.Workspace)/**/*.nupkg
-        -s $(NugetOrgServerUrl)
-        -k $(NugetOrgApiKey)
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet push'
+      inputs:
+        command: 'push'
+        packagesToPush: '$(Pipeline.Workspace)/**/*.nupkg'
+        nuGetFeedType: 'internal'
+        publishVstsFeed: '40f82a44-ccb3-4b97-b78a-4f61f521b9c3/e3313fb1-271b-4c42-99cc-f1a0935904b2'
+  
+  - job: PublishPublic
+    displayName: Publish to Nuget.org
+    dependsOn: Build
+    condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
+    steps:
+  
+    - download: current
+      displayName: Retrieve artifact
+      artifact: Helpful.Hosting.WindowsService.Core
+  
+    - task: DotNetCoreCLI@2
+      displayName: 'nuget push'
+      inputs:
+        command: custom
+        custom: nuget
+        arguments: >
+          push $(Pipeline.Workspace)/**/*.nupkg
+          -s $(NugetOrgServerUrl)
+          -k $(NugetOrgApiKey)
