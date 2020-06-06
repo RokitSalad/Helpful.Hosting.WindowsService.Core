@@ -50,89 +50,89 @@ stages:
       - publish: '$(Build.ArtifactStagingDirectory)'
         artifact: Helpful.Hosting.WindowsService.Core
 
-    - job: BuildDemoService
-      displayName: Build DemoService
-      steps:
+  - job: BuildDemoService
+    displayName: Build DemoService
+    steps:
   
-      - task: DotNetCoreCLI@2
-        displayName: 'dotnet restore'
-        inputs:
-          command: 'restore'
-          feedsToUse: 'select'
-          projects: '**/*.csproj'
-
-      - task: DotNetCoreCLI@2
-        displayName: 'dotnet build'
-        inputs:
-          command: 'build'
-          projects: '**/DemoService.csproj'
-
-      - task: DotNetCoreCLI@2
-        inputs:
-          command: 'publish'
-          arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/DemoService/'
-          publishWebProjects: false
-          projects: '**/DemoService.csproj'
-          zipAfterPublish: True
-  
-      - publish: '$(Build.ArtifactStagingDirectory)\DemoService'
-        artifact: DemoService
-
-    - job: BuildDemoServiceBackgroundProcess
-      displayName: Build DemoService BackgroundProcess
-      steps:
-    
-      - task: DotNetCoreCLI@2
+    - task: DotNetCoreCLI@2
       displayName: 'dotnet restore'
       inputs:
-          command: 'restore'
-          feedsToUse: 'select'
-          projects: '**/*.csproj'
-    
-      - task: DotNetCoreCLI@2
+        command: 'restore'
+        feedsToUse: 'select'
+        projects: '**/*.csproj'
+
+    - task: DotNetCoreCLI@2
       displayName: 'dotnet build'
       inputs:
-          command: 'build'
-          projects: '**/DemoServiceBackgroundProcess.csproj'
-    
-      - task: DotNetCoreCLI@2
-      inputs:
-          command: 'publish'
-          arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/DemoServiceBackgroundProcess/'
-          publishWebProjects: false
-          projects: '**/DemoServiceBackgroundProcess.csproj'
-          zipAfterPublish: True
-    
-      - publish: '$(Build.ArtifactStagingDirectory)\DemoServiceBackgroundProcess'
-      artifact: DemoServiceBackgroundProcess
+        command: 'build'
+        projects: '**/DemoService.csproj'
 
-    - job: BuildDemoServiceQuickStartApi
-      displayName: Build DemoService QuickStartApi
-      steps:
-      
-      - task: DotNetCoreCLI@2
-        displayName: 'dotnet restore'
-        inputs:
-          command: 'restore'
-          feedsToUse: 'select'
-          projects: '**/*.csproj'
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'publish'
+        arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/DemoService/'
+        publishWebProjects: false
+        projects: '**/DemoService.csproj'
+        zipAfterPublish: True
+  
+    - publish: '$(Build.ArtifactStagingDirectory)\DemoService'
+      artifact: DemoService
+
+  - job: BuildDemoServiceBackgroundProcess
+    displayName: Build DemoService BackgroundProcess
+    steps:
+  
+    - task: DotNetCoreCLI@2
+    displayName: 'dotnet restore'
+    inputs:
+        command: 'restore'
+        feedsToUse: 'select'
+        projects: '**/*.csproj'
+  
+    - task: DotNetCoreCLI@2
+    displayName: 'dotnet build'
+    inputs:
+        command: 'build'
+        projects: '**/DemoServiceBackgroundProcess.csproj'
+  
+    - task: DotNetCoreCLI@2
+    inputs:
+        command: 'publish'
+        arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/DemoServiceBackgroundProcess/'
+        publishWebProjects: false
+        projects: '**/DemoServiceBackgroundProcess.csproj'
+        zipAfterPublish: True
+  
+    - publish: '$(Build.ArtifactStagingDirectory)\DemoServiceBackgroundProcess'
+    artifact: DemoServiceBackgroundProcess
+
+  - job: BuildDemoServiceQuickStartApi
+    displayName: Build DemoService QuickStartApi
+    steps:
     
-      - task: DotNetCoreCLI@2
-        displayName: 'dotnet build'
-        inputs:
-          command: 'build'
-          projects: '**/DemoServiceQuickStartApi.csproj'
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet restore'
+      inputs:
+        command: 'restore'
+        feedsToUse: 'select'
+        projects: '**/*.csproj'
+  
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet build'
+      inputs:
+        command: 'build'
+        projects: '**/DemoServiceQuickStartApi.csproj'
+  
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'publish'
+        arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/DemoServiceQuickStartApi/'
+        publishWebProjects: false
+        projects: '**/DemoServiceQuickStartApi.csproj'
+        zipAfterPublish: True
     
-      - task: DotNetCoreCLI@2
-        inputs:
-          command: 'publish'
-          arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/DemoServiceQuickStartApi/'
-          publishWebProjects: false
-          projects: '**/DemoServiceQuickStartApi.csproj'
-          zipAfterPublish: True
-      
-      - publish: '$(Build.ArtifactStagingDirectory)\DemoServiceQuickStartApi'
-        artifact: DemoServiceQuickStartApi
+    - publish: '$(Build.ArtifactStagingDirectory)\DemoServiceQuickStartApi'
+      artifact: DemoServiceQuickStartApi
 
 - stage: test
   dependsOn: BuildandPackage
