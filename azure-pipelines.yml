@@ -83,20 +83,20 @@ stages:
     steps:
   
     - task: DotNetCoreCLI@2
-    displayName: 'dotnet restore'
-    inputs:
+      displayName: 'dotnet restore'
+      inputs:
         command: 'restore'
         feedsToUse: 'select'
         projects: '**/*.csproj'
   
     - task: DotNetCoreCLI@2
-    displayName: 'dotnet build'
-    inputs:
+      displayName: 'dotnet build'
+      inputs:
         command: 'build'
         projects: '**/DemoServiceBackgroundProcess.csproj'
   
     - task: DotNetCoreCLI@2
-    inputs:
+      inputs:
         command: 'publish'
         arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/DemoServiceBackgroundProcess/'
         publishWebProjects: false
@@ -104,7 +104,7 @@ stages:
         zipAfterPublish: True
   
     - publish: '$(Build.ArtifactStagingDirectory)\DemoServiceBackgroundProcess'
-    artifact: DemoServiceBackgroundProcess
+      artifact: DemoServiceBackgroundProcess
 
   - job: BuildDemoServiceQuickStartApi
     displayName: Build DemoService QuickStartApi
