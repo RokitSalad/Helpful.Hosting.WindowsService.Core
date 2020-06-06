@@ -141,7 +141,6 @@ stages:
 
   - deployment: VMDeploy_BuildDemoService
     displayName: Deploy DemoService to IntegrationTesting
-    dependsOn: BuildDemoService
     condition: succeeded()
     environment:
       name: IntegrationTesting-EC2
@@ -185,7 +184,6 @@ stages:
 
   - deployment: VMDeploy_DemoServiceBackgroundProcess
     displayName: Deploy DemoServiceBackgroundProcess to IntegrationTesting
-    dependsOn: BuildDemoServiceBackgroundProcess
     condition: succeeded()
     environment:
       name: IntegrationTesting-EC2
@@ -229,7 +227,6 @@ stages:
 
   - deployment: VMDeploy_DemoServiceQuickStartApi
     displayName: Deploy DemoServiceQuickStartApi to IntegrationTesting
-    dependsOn: BuildDemoServiceQuickStartApi
     condition: succeeded()
     environment:
       name: IntegrationTesting-EC2
