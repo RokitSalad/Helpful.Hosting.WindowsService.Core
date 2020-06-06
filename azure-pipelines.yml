@@ -71,7 +71,7 @@ jobs:
       projects: '**/DemoService.csproj'
       zipAfterPublish: True
   
-  - publish: '$(Build.ArtifactStagingDirectory)/DemoService'
+  - publish: '$(Build.ArtifactStagingDirectory)\DemoService'
     artifact: DemoService
 
 - deployment: VMDeploy_BuildDemoService
@@ -143,7 +143,7 @@ jobs:
       projects: '**/DemoServiceBackgroundProcess.csproj'
       zipAfterPublish: True
   
-  - publish: '$(Build.ArtifactStagingDirectory)/DemoServiceBackgroundProcess'
+  - publish: '$(Build.ArtifactStagingDirectory)\DemoServiceBackgroundProcess'
     artifact: DemoServiceBackgroundProcess
 
 - deployment: VMDeploy_DemoServiceBackgroundProcess
@@ -215,7 +215,7 @@ jobs:
       projects: '**/DemoServiceQuickStartApi.csproj'
       zipAfterPublish: True
   
-  - publish: '$(Build.ArtifactStagingDirectory)/DemoServiceQuickStartApi'
+  - publish: '$(Build.ArtifactStagingDirectory)\DemoServiceQuickStartApi'
     artifact: DemoServiceQuickStartApi
 
 - deployment: VMDeploy_DemoServiceQuickStartApi
