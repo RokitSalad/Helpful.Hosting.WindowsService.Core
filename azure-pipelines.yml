@@ -98,9 +98,9 @@ jobs:
             script: |
               # Write your PowerShell commands here.
       
-              & $(Pipeline.Workspace)/DemoService/DemoService.exe stop
+              & $(Pipeline.Workspace)\DemoService\DemoService.exe stop
               Start-Sleep -Seconds 5
-              & $(Pipeline.Workspace)/DemoService/DemoService.exe uninstall
+              & $(Pipeline.Workspace)\DemoService\DemoService.exe uninstall
               Start-Sleep -Seconds 5
             errorActionPreference: 'continue'
 
@@ -111,11 +111,11 @@ jobs:
             script: |
               # Write your PowerShell commands here.
       
-              Remove-Item "$(Pipeline.Workspace)/DemoService" -recurse -force
-              Expand-Archive $(Pipeline.Workspace)/DemoService/DemoService.zip -DestinationPath "$AZDO_APP_INSTALL_PATH\DemoService\"
-              & $(Pipeline.Workspace)/DemoService/DemoService.exe install
+              Remove-Item "$(Pipeline.Workspace)\DemoService" -recurse -force
+              Expand-Archive $(Pipeline.Workspace)\DemoService\DemoService.zip -DestinationPath "$AZDO_APP_INSTALL_PATH\DemoService\"
+              & $(Pipeline.Workspace)\DemoService\DemoService.exe install
               Start-Sleep -Seconds 5
-              & $(Pipeline.Workspace)/DemoService/DemoService.exe start
+              & $(Pipeline.Workspace)\DemoService\DemoService.exe start
             errorActionPreference: 'stop'
 
 - job: BuildDemoServiceBackgroundProcess
@@ -170,9 +170,9 @@ jobs:
             script: |
               # Write your PowerShell commands here.
       
-              & $(Pipeline.Workspace)/DemoServiceBackgroundProcess/DemoServiceBackgroundProcess.exe stop
+              & $(Pipeline.Workspace)\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.exe stop
               Start-Sleep -Seconds 5
-              & $(Pipeline.Workspace)/DemoServiceBackgroundProcess/DemoServiceBackgroundProcess.exe uninstall
+              & $(Pipeline.Workspace)\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.exe uninstall
               Start-Sleep -Seconds 5
             errorActionPreference: 'continue'
 
@@ -183,11 +183,11 @@ jobs:
             script: |
               # Write your PowerShell commands here.
       
-              Remove-Item "$(Pipeline.Workspace)/DemoServiceBackgroundProcess" -recurse -force
-              Expand-Archive $(Pipeline.Workspace)/DemoServiceBackgroundProcess/DemoServiceBackgroundProcess.zip -DestinationPath "$AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\"
-              & $(Pipeline.Workspace)/DemoServiceBackgroundProcess/DemoServiceBackgroundProcess.exe install
+              Remove-Item "$(Pipeline.Workspace)\DemoServiceBackgroundProcess" -recurse -force
+              Expand-Archive $(Pipeline.Workspace)\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.zip -DestinationPath "$AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\"
+              & $(Pipeline.Workspace)\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.exe install
               Start-Sleep -Seconds 5
-              & $(Pipeline.Workspace)/DemoServiceBackgroundProcess/DemoServiceBackgroundProcess.exe start
+              & $(Pipeline.Workspace)\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.exe start
             errorActionPreference: 'stop'
 
 - job: BuildDemoServiceQuickStartApi
@@ -242,9 +242,9 @@ jobs:
             script: |
               # Write your PowerShell commands here.
       
-              & $(Pipeline.Workspace)/DemoServiceBackgroundProcess/DemoServiceBackgroundProcess.exe stop
+              & $(Pipeline.Workspace)\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.exe stop
               Start-Sleep -Seconds 5
-              & $(Pipeline.Workspace)/DemoServiceBackgroundProcess/DemoServiceBackgroundProcess.exe uninstall
+              & $(Pipeline.Workspace)\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.exe uninstall
               Start-Sleep -Seconds 5
             errorActionPreference: 'continue'
 
@@ -255,11 +255,11 @@ jobs:
             script: |
               # Write your PowerShell commands here.
       
-              Remove-Item "$(Pipeline.Workspace)/DemoServiceBackgroundProcess" -recurse -force
-              Expand-Archive $(Pipeline.Workspace)/DemoServiceBackgroundProcess/DemoServiceBackgroundProcess.zip -DestinationPath "$AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\"
-              & $(Pipeline.Workspace)/DemoServiceBackgroundProcess/DemoServiceBackgroundProcess.exe install
+              Remove-Item "$(Pipeline.Workspace)\DemoServiceBackgroundProcess" -recurse -force
+              Expand-Archive $(Pipeline.Workspace)\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.zip -DestinationPath "$AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\"
+              & $(Pipeline.Workspace)\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.exe install
               Start-Sleep -Seconds 5
-              & $(Pipeline.Workspace)/DemoServiceBackgroundProcess/DemoServiceBackgroundProcess.exe start
+              & $(Pipeline.Workspace)\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.exe start
             errorActionPreference: 'stop'
 
 - job: PublishLocal
