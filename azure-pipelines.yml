@@ -111,7 +111,7 @@ jobs:
             script: |
               # Write your PowerShell commands here.
       
-              Remove-Item "$AZDO_APP_INSTALL_PATH\DemoService" -recurse -force
+              Remove-Item "$AZDO_APP_INSTALL_PATH\DemoService" -recurse -force -ErrorAction Ignore
               Expand-Archive $(Pipeline.Workspace)\DemoService\DemoService.zip -DestinationPath "$AZDO_APP_INSTALL_PATH\DemoService\"
               & $AZDO_APP_INSTALL_PATH\DemoService\DemoService.exe install
               Start-Sleep -Seconds 5
@@ -183,7 +183,7 @@ jobs:
             script: |
               # Write your PowerShell commands here.
       
-              Remove-Item "$AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess" -recurse -force
+              Remove-Item "$AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess" -recurse -force -ErrorAction Ignore
               Expand-Archive $(Pipeline.Workspace)\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.zip -DestinationPath "$AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\"
               & $AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.exe install
               Start-Sleep -Seconds 5
@@ -255,7 +255,7 @@ jobs:
             script: |
               # Write your PowerShell commands here.
       
-              Remove-Item "$AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi" -recurse -force
+              Remove-Item "$AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi" -recurse -force -ErrorAction Ignore
               Expand-Archive $(Pipeline.Workspace)\DemoServiceQuickStartApi\DemoServiceQuickStartApi.zip -DestinationPath "$AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi\"
               & $AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi\DemoServiceQuickStartApi.exe install
               Start-Sleep -Seconds 5
