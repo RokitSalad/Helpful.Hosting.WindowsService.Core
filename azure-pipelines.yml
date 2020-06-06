@@ -65,7 +65,7 @@ jobs:
 
   - task: DotNetCoreCLI@2
     inputs:
-      command: 'dotnet publish'
+      command: 'publish'
       arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/DemoService/'
       publishWebProjects: false
       projects: '**/DemoService.csproj'
@@ -92,10 +92,31 @@ jobs:
           artifact: 'DemoService'
 
         - task: PowerShell@2
+          displayName: Clean up existing service
           inputs:
-            filePath: '$(Pipeline.Workspace)/DemoService/Tools/deploy.ps1'
-            failOnStderr: true
-            pwsh: true
+            targetType: 'inline'
+            script: |
+              # Write your PowerShell commands here.
+      
+              & $(Pipeline.Workspace)/DemoService/DemoService.exe stop
+              Start-Sleep -Seconds 5
+              & $(Pipeline.Workspace)/DemoService/DemoService.exe uninstall
+              Start-Sleep -Seconds 5
+            errorActionPreference: 'continue'
+
+        - task: PowerShell@2
+          displayName: Install new service
+          inputs:
+            targetType: 'inline'
+            script: |
+              # Write your PowerShell commands here.
+      
+              Remove-Item "$(Pipeline.Workspace)/DemoService" -recurse -force
+              Expand-Archive $(Pipeline.Workspace)/DemoService/DemoService.zip -DestinationPath "$AZDO_APP_INSTALL_PATH\DemoService\"
+              & $(Pipeline.Workspace)/DemoService/DemoService.exe install
+              Start-Sleep -Seconds 5
+              & $(Pipeline.Workspace)/DemoService/DemoService.exe start
+            errorActionPreference: 'stop'
 
 - job: BuildDemoServiceBackgroundProcess
   displayName: Build DemoService BackgroundProcess
@@ -143,10 +164,31 @@ jobs:
           artifact: 'DemoServiceBackgroundProcess'
 
         - task: PowerShell@2
+          displayName: Clean up existing service
           inputs:
-            filePath: '$(Pipeline.Workspace)/DemoServiceBackgroundProcess/Tools/deploy.ps1'
-            failOnStderr: true
-            pwsh: true
+            targetType: 'inline'
+            script: |
+              # Write your PowerShell commands here.
+      
+              & $(Pipeline.Workspace)/DemoServiceBackgroundProcess/DemoServiceBackgroundProcess.exe stop
+              Start-Sleep -Seconds 5
+              & $(Pipeline.Workspace)/DemoServiceBackgroundProcess/DemoServiceBackgroundProcess.exe uninstall
+              Start-Sleep -Seconds 5
+            errorActionPreference: 'continue'
+
+        - task: PowerShell@2
+          displayName: Install new service
+          inputs:
+            targetType: 'inline'
+            script: |
+              # Write your PowerShell commands here.
+      
+              Remove-Item "$(Pipeline.Workspace)/DemoServiceBackgroundProcess" -recurse -force
+              Expand-Archive $(Pipeline.Workspace)/DemoServiceBackgroundProcess/DemoServiceBackgroundProcess.zip -DestinationPath "$AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\"
+              & $(Pipeline.Workspace)/DemoServiceBackgroundProcess/DemoServiceBackgroundProcess.exe install
+              Start-Sleep -Seconds 5
+              & $(Pipeline.Workspace)/DemoServiceBackgroundProcess/DemoServiceBackgroundProcess.exe start
+            errorActionPreference: 'stop'
 
 - job: BuildDemoServiceQuickStartApi
   displayName: Build DemoService QuickStartApi
@@ -194,10 +236,31 @@ jobs:
           artifact: 'DemoServiceBackgroundProcess'
 
         - task: PowerShell@2
+          displayName: Clean up existing service
           inputs:
-            filePath: '$(Pipeline.Workspace)/DemoServiceBackgroundProcess/Tools/deploy.ps1'
-            failOnStderr: true
-            pwsh: true
+            targetType: 'inline'
+            script: |
+              # Write your PowerShell commands here.
+      
+              & $(Pipeline.Workspace)/DemoServiceBackgroundProcess/DemoServiceBackgroundProcess.exe stop
+              Start-Sleep -Seconds 5
+              & $(Pipeline.Workspace)/DemoServiceBackgroundProcess/DemoServiceBackgroundProcess.exe uninstall
+              Start-Sleep -Seconds 5
+            errorActionPreference: 'continue'
+
+        - task: PowerShell@2
+          displayName: Install new service
+          inputs:
+            targetType: 'inline'
+            script: |
+              # Write your PowerShell commands here.
+      
+              Remove-Item "$(Pipeline.Workspace)/DemoServiceBackgroundProcess" -recurse -force
+              Expand-Archive $(Pipeline.Workspace)/DemoServiceBackgroundProcess/DemoServiceBackgroundProcess.zip -DestinationPath "$AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\"
+              & $(Pipeline.Workspace)/DemoServiceBackgroundProcess/DemoServiceBackgroundProcess.exe install
+              Start-Sleep -Seconds 5
+              & $(Pipeline.Workspace)/DemoServiceBackgroundProcess/DemoServiceBackgroundProcess.exe start
+            errorActionPreference: 'stop'
 
 - job: PublishLocal
   displayName: Publish to local feed

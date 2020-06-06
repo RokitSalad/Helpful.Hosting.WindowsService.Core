@@ -9,10 +9,4 @@
     <ProjectReference Include="..\Helpful.Hosting.WindowsService.Core\Helpful.Hosting.WindowsService.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="Tools\deploy.ps1">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>
