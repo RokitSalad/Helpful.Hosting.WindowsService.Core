@@ -162,9 +162,9 @@ stages:
               script: |
                 # Write your PowerShell commands here.
         
-                & $AZDO_APP_INSTALL_PATH\DemoService\DemoService.exe stop
+                & $Env:AZDO_APP_INSTALL_PATH\DemoService\DemoService.exe stop
                 Start-Sleep -Seconds 5
-                & $AZDO_APP_INSTALL_PATH\DemoService\DemoService.exe uninstall
+                & $Env:AZDO_APP_INSTALL_PATH\DemoService\DemoService.exe uninstall
                 Start-Sleep -Seconds 5
               errorActionPreference: 'continue'
   
@@ -175,11 +175,11 @@ stages:
               script: |
                 # Write your PowerShell commands here.
         
-                Remove-Item "$AZDO_APP_INSTALL_PATH\DemoService" -recurse -force -ErrorAction Ignore
-                Expand-Archive $(Pipeline.Workspace)\DemoService\DemoService.zip -DestinationPath "$AZDO_APP_INSTALL_PATH\DemoService\"
-                & $AZDO_APP_INSTALL_PATH\DemoService\DemoService.exe install
+                Remove-Item "$Env:AZDO_APP_INSTALL_PATH\DemoService" -recurse -force -ErrorAction Ignore
+                Expand-Archive $(Pipeline.Workspace)\DemoService\DemoService.zip -DestinationPath "$Env:AZDO_APP_INSTALL_PATH\DemoService\"
+                & $Env:AZDO_APP_INSTALL_PATH\DemoService\DemoService.exe install
                 Start-Sleep -Seconds 5
-                & $AZDO_APP_INSTALL_PATH\DemoService\DemoService.exe start
+                & $Env:AZDO_APP_INSTALL_PATH\DemoService\DemoService.exe start
               errorActionPreference: 'stop'
 
   - deployment: VMDeploy_DemoServiceBackgroundProcess
@@ -205,9 +205,9 @@ stages:
               script: |
                 # Write your PowerShell commands here.
         
-                & $AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.exe stop
+                & $Env:AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.exe stop
                 Start-Sleep -Seconds 5
-                & $AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.exe uninstall
+                & $Env:AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.exe uninstall
                 Start-Sleep -Seconds 5
               errorActionPreference: 'continue'
   
@@ -218,7 +218,7 @@ stages:
               script: |
                 # Write your PowerShell commands here.
         
-                $InstallPath = "$AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess"
+                $InstallPath = "$Env:AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess"
                 if(Test-Path -Path $InstallPath){
                   Remove-Item $InstallPath -recurse -force 
                 }                
@@ -251,9 +251,9 @@ stages:
               script: |
                 # Write your PowerShell commands here.
         
-                & $AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi\DemoServiceQuickStartApi.exe stop
+                & $Env:AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi\DemoServiceQuickStartApi.exe stop
                 Start-Sleep -Seconds 5
-                & $$AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi\DemoServiceQuickStartApi.exe uninstall
+                & $Env:AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi\DemoServiceQuickStartApi.exe uninstall
                 Start-Sleep -Seconds 5
               errorActionPreference: 'continue'
   
@@ -264,11 +264,11 @@ stages:
               script: |
                 # Write your PowerShell commands here.
         
-                Remove-Item "$AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi" -recurse -force -ErrorAction Ignore
-                Expand-Archive $(Pipeline.Workspace)\DemoServiceQuickStartApi\DemoServiceQuickStartApi.zip -DestinationPath "$AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi\"
-                & $AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi\DemoServiceQuickStartApi.exe install
+                Remove-Item "$Env:AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi" -recurse -force -ErrorAction Ignore
+                Expand-Archive $(Pipeline.Workspace)\DemoServiceQuickStartApi\DemoServiceQuickStartApi.zip -DestinationPath "$Env:AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi\"
+                & $Env:AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi\DemoServiceQuickStartApi.exe install
                 Start-Sleep -Seconds 5
-                & $AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi\DemoServiceQuickStartApi.exe start
+                & $Env:AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi\DemoServiceQuickStartApi.exe start
               errorActionPreference: 'stop'
 
 - stage: Publish
