@@ -218,11 +218,14 @@ stages:
               script: |
                 # Write your PowerShell commands here.
         
-                Remove-Item "$AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess" -recurse -force -ErrorAction Ignore
-                Expand-Archive $(Pipeline.Workspace)\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.zip -DestinationPath "$AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\"
-                & $AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.exe install
+                $InstallPath = "$AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess"
+                if(Test-Path -Path $InstallPath){
+                  Remove-Item $InstallPath -recurse -force 
+                }                
+                Expand-Archive $(Pipeline.Workspace)\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.zip -DestinationPath $InstallPath
+                & "$InstallPath\DemoServiceBackgroundProcess.exe" install
                 Start-Sleep -Seconds 5
-                & $AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.exe start
+                & "$InstallPath\DemoServiceBackgroundProcess.exe" start
               errorActionPreference: 'stop'
 
   - deployment: VMDeploy_DemoServiceQuickStartApi

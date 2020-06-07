@@ -8,7 +8,7 @@ namespace DemoServiceQuickStartApi
     {
         static void Main(string[] args)
         {
-            var runner = new HostRunner("DemoService_QuickStartApi", "http://*:5002");
+            var runner = new HostRunner("DemoService_QuickStartApi", "http://*:8054");
             var exit = runner.RunWebService();
         }
     }
