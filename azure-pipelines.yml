@@ -164,9 +164,9 @@ stages:
 
                 $InstallPath = "$Env:AZDO_APP_INSTALL_PATH\DemoService"
                 & "$InstallPath\DemoService.exe" stop
-                Start-Sleep -Seconds 5
+                Start-Sleep -Seconds 3
                 & "$InstallPath\DemoService.exe" uninstall
-                Start-Sleep -Seconds 5
+                Start-Sleep -Seconds 10
               errorActionPreference: 'continue'
   
           - task: PowerShell@2
@@ -211,9 +211,9 @@ stages:
         
                 $InstallPath = "$Env:AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess"
                 & "$InstallPath\DemoServiceBackgroundProcess.exe" stop
-                Start-Sleep -Seconds 5
+                Start-Sleep -Seconds 3
                 & "$InstallPath\DemoServiceBackgroundProcess.exe" uninstall
-                Start-Sleep -Seconds 5
+                Start-Sleep -Seconds 10
               errorActionPreference: 'continue'
   
           - task: PowerShell@2
@@ -258,9 +258,9 @@ stages:
         
                 $InstallPath = "$Env:AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi"
                 & "$InstallPath\DemoServiceQuickStartApi.exe" stop
-                Start-Sleep -Seconds 5
+                Start-Sleep -Seconds 3
                 & "$InstallPath\DemoServiceQuickStartApi.exe" uninstall
-                Start-Sleep -Seconds 5
+                Start-Sleep -Seconds 10
               errorActionPreference: 'continue'
   
           - task: PowerShell@2
