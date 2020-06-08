@@ -133,7 +133,7 @@ stages:
     - publish: '$(Build.ArtifactStagingDirectory)\DemoServiceQuickStartApi'
       artifact: DemoServiceQuickStartApi
 
-- stage: test
+- stage: Test
   dependsOn: BuildandPackage
   condition: succeeded()
   jobs:
@@ -153,36 +153,25 @@ stages:
           - download: current
             displayName: Download DemoService
             artifact: 'DemoService'
-  
-          - task: PowerShell@2
-            displayName: Clean up existing service
-            inputs:
-              targetType: 'inline'
-              script: |
-                # Write your PowerShell commands here.
 
-                $InstallPath = "$Env:AZDO_APP_INSTALL_PATH\DemoService"
-                & "$InstallPath\DemoService.exe" stop
-                Start-Sleep -Seconds 3
-                & "$InstallPath\DemoService.exe" uninstall
-                Start-Sleep -Seconds 15
-              errorActionPreference: 'continue'
-  
+          - task: UniversalPackages@0
+            inputs:
+              command: 'download'
+              downloadDirectory: '$(Pipeline.Workspace)'
+              feedsToUse: 'internal'
+              vstsFeed: '40f82a44-ccb3-4b97-b78a-4f61f521b9c3/b741ff8b-6a2a-449f-8a54-a7fefb333bf0'
+              vstsFeedPackage: 'ba482169-4bdc-4fa9-a242-18a9b608af5d'
+              vstsPackageVersion: '*'
+              verbosity: 'Debug'
+
           - task: PowerShell@2
-            displayName: Install new service
+            displayName: Unpack and Run DevOps
             inputs:
               targetType: 'inline'
               script: |
-                # Write your PowerShell commands here.
-        
-                $InstallPath = "$Env:AZDO_APP_INSTALL_PATH\DemoService"
-                if(Test-Path -Path $InstallPath){
-                  Remove-Item $InstallPath -recurse -force 
-                } 
-                Expand-Archive $(Pipeline.Workspace)\DemoService\DemoService.zip -DestinationPath $InstallPath
-                & "$InstallPath\DemoService.exe" install
-                Start-Sleep -Seconds 5
-                & "$InstallPath\DemoService.exe" start
+                Expand-Archive '$(Pipeline.Workspace)\DevOps.zip' -DestinationPath "$(Pipeline.Workspace)\DevOps"
+                & "$(Pipeline.Workspace)\DevOps\Powershell\uninstallService.ps1" -ServiceName "DemoService" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH
+                & "$(Pipeline.Workspace)\DevOps\Powershell\installService.ps1" -ServiceName "DemoService" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH -PipelineWorkspacePath $(Pipeline.Workspace)
               errorActionPreference: 'stop'
 
   - deployment: VMDeploy_DemoServiceBackgroundProcess
