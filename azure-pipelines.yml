@@ -163,16 +163,17 @@ stages:
               vstsFeedPackage: 'ba482169-4bdc-4fa9-a242-18a9b608af5d'
               vstsPackageVersion: '*'
               verbosity: 'Debug'
-              publishedPackageVar: $(DevOps)
 
           - task: PowerShell@2
             displayName: Unpack and Run DevOps
             inputs:
               targetType: 'inline'
               script: |
-                Expand-Archive '$(Pipeline.Workspace)\$(DevOps)' -DestinationPath "$(Pipeline.Workspace)\DevOps"
-                & "$(Pipeline.Workspace)\DevOps\Powershell\uninstallService.ps1" -ServiceName "DemoService" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH
-                & "$(Pipeline.Workspace)\DevOps\Powershell\installService.ps1" -ServiceName "DemoService" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH -PipelineWorkspacePath $(Pipeline.Workspace)
+                Get-ChildItem $(Pipeline.Workspace) -Filter Helpful.DevOps.*.zip | select -last 1 | ForEach-Object {
+                  Expand-Archive $_.FullName -DestinationPath "$(Pipeline.Workspace)\Helpful.DevOps"
+                }
+                & "$(Pipeline.Workspace)\Helpful.DevOps\Powershell\uninstallService.ps1" -ServiceName "DemoService" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH
+                & "$(Pipeline.Workspace)\Helpful.DevOps\Powershell\installService.ps1" -ServiceName "DemoService" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH -PipelineWorkspacePath $(Pipeline.Workspace)                
               errorActionPreference: 'stop'
 
   - deployment: VMDeploy_DemoServiceBackgroundProcess
