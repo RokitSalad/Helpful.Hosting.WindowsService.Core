@@ -170,7 +170,7 @@ stages:
               targetType: 'inline'
               script: |
                 Get-ChildItem $(Pipeline.Workspace) -Filter Helpful.DevOps.*.zip | select -last 1 | ForEach-Object {
-                  Expand-Archive $_.FullName -DestinationPath "$(Pipeline.Workspace)\Helpful.DevOps"
+                  Expand-Archive $_.FullName -DestinationPath "$(Pipeline.Workspace)\Helpful.DevOps" -Force
                 }
                 & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\uninstallService.ps1" -ServiceName "DemoService" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH
                 & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\installService.ps1" -ServiceName "DemoService" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH -PipelineWorkspacePath $(Pipeline.Workspace)                
