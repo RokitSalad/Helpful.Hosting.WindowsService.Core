@@ -163,13 +163,14 @@ stages:
               vstsFeedPackage: 'ba482169-4bdc-4fa9-a242-18a9b608af5d'
               vstsPackageVersion: '*'
               verbosity: 'Debug'
+              publishedPackageVar: $(DevOps)
 
           - task: PowerShell@2
             displayName: Unpack and Run DevOps
             inputs:
               targetType: 'inline'
               script: |
-                Expand-Archive '$(Pipeline.Workspace)\DevOps.zip' -DestinationPath "$(Pipeline.Workspace)\DevOps"
+                Expand-Archive '$(Pipeline.Workspace)\$(DevOps)' -DestinationPath "$(Pipeline.Workspace)\DevOps"
                 & "$(Pipeline.Workspace)\DevOps\Powershell\uninstallService.ps1" -ServiceName "DemoService" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH
                 & "$(Pipeline.Workspace)\DevOps\Powershell\installService.ps1" -ServiceName "DemoService" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH -PipelineWorkspacePath $(Pipeline.Workspace)
               errorActionPreference: 'stop'
