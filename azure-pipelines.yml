@@ -271,7 +271,7 @@ stages:
   
   - job: PublishPublic
     displayName: Publish to Nuget.org
-    condition: eq(variables['build.sourceBranch'], 'refs/heads/master'))
+    condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
     steps:
   
     - download: current
