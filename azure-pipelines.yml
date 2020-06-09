@@ -138,7 +138,7 @@ stages:
   condition: succeeded()
   jobs:
 
-  - deployment: VMDeploy_BuildDemoService
+  - deployment: VMDeploy_DemoService
     displayName: Deploy DemoService to IntegrationTesting
     condition: succeeded()
     environment:
@@ -155,11 +155,12 @@ stages:
             artifact: 'DemoService'
 
           - task: UniversalPackages@0
+            displayName: Download DevOps Package
             inputs:
               command: 'download'
               downloadDirectory: '$(Pipeline.Workspace)'
               feedsToUse: 'internal'
-              vstsFeed: '40f82a44-ccb3-4b97-b78a-4f61f521b9c3/b741ff8b-6a2a-449f-8a54-a7fefb333bf0'
+              vstsFeed: '$(helpful-libraries-feed-automation-uri)'
               vstsFeedPackage: 'ba482169-4bdc-4fa9-a242-18a9b608af5d'
               vstsPackageVersion: '*'
               verbosity: 'Debug'
@@ -192,35 +193,27 @@ stages:
             displayName: Download DemoServiceBackgroundProcess
             artifact: 'DemoServiceBackgroundProcess'
   
+          - task: UniversalPackages@0
+            displayName: Download DevOps Package
+            inputs:
+              command: 'download'
+              downloadDirectory: '$(Pipeline.Workspace)'
+              feedsToUse: 'internal'
+              vstsFeed: '$(helpful-libraries-feed-automation-uri)'
+              vstsFeedPackage: 'ba482169-4bdc-4fa9-a242-18a9b608af5d'
+              vstsPackageVersion: '*'
+              verbosity: 'Debug'
+
           - task: PowerShell@2
-            displayName: Clean up existing service
+            displayName: Unpack and Run DevOps
             inputs:
               targetType: 'inline'
               script: |
-                # Write your PowerShell commands here.
-        
-                $InstallPath = "$Env:AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess"
-                & "$InstallPath\DemoServiceBackgroundProcess.exe" stop
-                Start-Sleep -Seconds 3
-                & "$InstallPath\DemoServiceBackgroundProcess.exe" uninstall
-                Start-Sleep -Seconds 15
-              errorActionPreference: 'continue'
-  
-          - task: PowerShell@2
-            displayName: Install new service
-            inputs:
-              targetType: 'inline'
-              script: |
-                # Write your PowerShell commands here.
-        
-                $InstallPath = "$Env:AZDO_APP_INSTALL_PATH\DemoServiceBackgroundProcess"
-                if(Test-Path -Path $InstallPath){
-                  Remove-Item $InstallPath -recurse -force 
-                }                
-                Expand-Archive $(Pipeline.Workspace)\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.zip -DestinationPath $InstallPath
-                & "$InstallPath\DemoServiceBackgroundProcess.exe" install
-                Start-Sleep -Seconds 5
-                & "$InstallPath\DemoServiceBackgroundProcess.exe" start
+                Get-ChildItem $(Pipeline.Workspace) -Filter Helpful.DevOps.*.zip | select -last 1 | ForEach-Object {
+                  Expand-Archive $_.FullName -DestinationPath "$(Pipeline.Workspace)\Helpful.DevOps" -Force
+                }
+                & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\uninstallService.ps1" -ServiceName "DemoServiceBackgroundProcess" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH
+                & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\installService.ps1" -ServiceName "DemoServiceBackgroundProcess" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH -PipelineWorkspacePath $(Pipeline.Workspace)                
               errorActionPreference: 'stop'
 
   - deployment: VMDeploy_DemoServiceQuickStartApi
@@ -239,35 +232,27 @@ stages:
             displayName: Download DemoServiceQuickStartApi
             artifact: 'DemoServiceQuickStartApi'
   
+          - task: UniversalPackages@0
+            displayName: Download DevOps Package
+            inputs:
+              command: 'download'
+              downloadDirectory: '$(Pipeline.Workspace)'
+              feedsToUse: 'internal'
+              vstsFeed: '$(helpful-libraries-feed-automation-uri)'
+              vstsFeedPackage: 'ba482169-4bdc-4fa9-a242-18a9b608af5d'
+              vstsPackageVersion: '*'
+              verbosity: 'Debug'
+
           - task: PowerShell@2
-            displayName: Clean up existing service
+            displayName: Unpack and Run DevOps
             inputs:
               targetType: 'inline'
               script: |
-                # Write your PowerShell commands here.
-        
-                $InstallPath = "$Env:AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi"
-                & "$InstallPath\DemoServiceQuickStartApi.exe" stop
-                Start-Sleep -Seconds 3
-                & "$InstallPath\DemoServiceQuickStartApi.exe" uninstall
-                Start-Sleep -Seconds 15
-              errorActionPreference: 'continue'
-  
-          - task: PowerShell@2
-            displayName: Install new service
-            inputs:
-              targetType: 'inline'
-              script: |
-                # Write your PowerShell commands here.
-        
-                $InstallPath = "$Env:AZDO_APP_INSTALL_PATH\DemoServiceQuickStartApi"
-                if(Test-Path -Path $InstallPath){
-                  Remove-Item $InstallPath -recurse -force 
-                } 
-                Expand-Archive $(Pipeline.Workspace)\DemoServiceQuickStartApi\DemoServiceQuickStartApi.zip -DestinationPath $InstallPath
-                & "$InstallPath\DemoServiceQuickStartApi.exe" install
-                Start-Sleep -Seconds 5
-                & "$InstallPath\DemoServiceQuickStartApi.exe" start
+                Get-ChildItem $(Pipeline.Workspace) -Filter Helpful.DevOps.*.zip | select -last 1 | ForEach-Object {
+                  Expand-Archive $_.FullName -DestinationPath "$(Pipeline.Workspace)\Helpful.DevOps" -Force
+                }
+                & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\uninstallService.ps1" -ServiceName "DemoServiceQuickStartApi" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH
+                & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\installService.ps1" -ServiceName "DemoServiceQuickStartApi" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH -PipelineWorkspacePath $(Pipeline.Workspace)                
               errorActionPreference: 'stop'
 
 - stage: Publish
