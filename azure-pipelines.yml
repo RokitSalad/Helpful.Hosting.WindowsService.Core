@@ -12,74 +12,278 @@ pool:
   vmImage: 'windows-latest'
 
 variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
-  buildVersion: 1.0.$(Rev:r)
+  - group: helpful-libraries-secrets
+  - name: buildConfiguration
+    value: "Release"
 
-jobs:
+stages:
 
-- job: build
-  steps:
+- stage: BuildandPackage
+  displayName: Build and Package
+  jobs:
 
-  - task: DotNetCoreCLI@2
-    displayName: 'dotnet restore'
-    inputs:
-      command: 'restore'
-      feedsToUse: 'select'
-      projects: '**/*.csproj'
+  - job: build
+    steps:
 
-  - task: DotNetCoreCLI@2
-    displayName: 'dotnet build'
-    inputs:
-      command: 'build'
-      projects: '**/*.csproj'
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet restore'
+        inputs:
+          command: 'restore'
+          feedsToUse: 'select'
+          projects: '**/Helpful.Hosting.WindowsService.Core.csproj'
 
-  - task: DotNetCoreCLI@2
-    displayName: 'dotnet pack'
-    inputs:
-      command: 'pack'
-      packagesToPack: '**/Helpful.Hosting.WindowsService.Core.csproj'
-      versioningScheme: 'byBuildNumber'
-      verbosityPack: 'Diagnostic'
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet build'
+        inputs:
+          command: 'build'
+          projects: '**/Helpful.Hosting.WindowsService.Core.csproj'
 
-  - publish: '$(Build.ArtifactStagingDirectory)'
-    artifact: Helpful.Hosting.WindowsService.Core
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet pack'
+        inputs:
+          command: 'pack'
+          packagesToPack: '**/Helpful.Hosting.WindowsService.Core.csproj'
+          versioningScheme: 'byBuildNumber'
+          verbosityPack: 'Diagnostic'
+
+      - publish: '$(Build.ArtifactStagingDirectory)'
+        artifact: Helpful.Hosting.WindowsService.Core
+
+  - job: BuildDemoService
+    displayName: Build DemoService
+    steps:
   
-- job: PublishLocal
-  displayName: Publish to local feed
-  dependsOn: Build
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet restore'
+      inputs:
+        command: 'restore'
+        feedsToUse: 'select'
+        projects: '**/*.csproj'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet build'
+      inputs:
+        command: 'build'
+        projects: '**/DemoService.csproj'
+
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'publish'
+        arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/DemoService/'
+        publishWebProjects: false
+        projects: '**/DemoService.csproj'
+        zipAfterPublish: True
+  
+    - publish: '$(Build.ArtifactStagingDirectory)\DemoService'
+      artifact: DemoService
+
+  - job: BuildDemoServiceBackgroundProcess
+    displayName: Build DemoService BackgroundProcess
+    steps:
+  
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet restore'
+      inputs:
+        command: 'restore'
+        feedsToUse: 'select'
+        projects: '**/*.csproj'
+  
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet build'
+      inputs:
+        command: 'build'
+        projects: '**/DemoServiceBackgroundProcess.csproj'
+  
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'publish'
+        arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/DemoServiceBackgroundProcess/'
+        publishWebProjects: false
+        projects: '**/DemoServiceBackgroundProcess.csproj'
+        zipAfterPublish: True
+  
+    - publish: '$(Build.ArtifactStagingDirectory)\DemoServiceBackgroundProcess'
+      artifact: DemoServiceBackgroundProcess
+
+  - job: BuildDemoServiceQuickStartApi
+    displayName: Build DemoService QuickStartApi
+    steps:
+    
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet restore'
+      inputs:
+        command: 'restore'
+        feedsToUse: 'select'
+        projects: '**/*.csproj'
+  
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet build'
+      inputs:
+        command: 'build'
+        projects: '**/DemoServiceQuickStartApi.csproj'
+  
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'publish'
+        arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/DemoServiceQuickStartApi/'
+        publishWebProjects: false
+        projects: '**/DemoServiceQuickStartApi.csproj'
+        zipAfterPublish: True
+    
+    - publish: '$(Build.ArtifactStagingDirectory)\DemoServiceQuickStartApi'
+      artifact: DemoServiceQuickStartApi
+
+- stage: Test
+  dependsOn: BuildandPackage
   condition: succeeded()
-  steps:
+  jobs:
 
-  - download: current
-    displayName: Retrieve artifact
-    artifact: Helpful.Hosting.WindowsService.Core
+  - deployment: VMDeploy_DevOps
+    displayName: Deploy Helpful.DevOps to target server
+    environment:
+      name: IntegrationTesting-EC2
+      resourceType: VirtualMachine
+      tags: service
+    strategy:
+      runOnce:
+        deploy:
+          steps:
 
-  - task: DotNetCoreCLI@2
-    displayName: 'dotnet push'
-    inputs:
-      command: 'push'
-      packagesToPush: '$(Pipeline.Workspace)/**/*.nupkg'
-      nuGetFeedType: 'internal'
-      publishVstsFeed: '40f82a44-ccb3-4b97-b78a-4f61f521b9c3/e3313fb1-271b-4c42-99cc-f1a0935904b2'
+          - task: UniversalPackages@0
+            displayName: Download DevOps Package
+            inputs:
+              command: 'download'
+              downloadDirectory: '$(Pipeline.Workspace)'
+              feedsToUse: 'internal'
+              vstsFeed: '$(helpful-libraries-feed-automation-uri)'
+              vstsFeedPackage: 'ba482169-4bdc-4fa9-a242-18a9b608af5d'
+              vstsPackageVersion: '*'
+              verbosity: 'Debug'
 
-- job: PublishPublic
-  displayName: Publish to Nuget.org
-  dependsOn: Build
-  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
-  steps:
+          - task: PowerShell@2
+            displayName: Unpack DevOps
+            inputs:
+              targetType: 'inline'
+              script: |
+                Get-ChildItem $(Pipeline.Workspace) -Filter Helpful.DevOps.*.zip | sort LastWriteTime | select -last 1 | ForEach-Object {
+                  Expand-Archive $_.FullName -DestinationPath "$(Pipeline.Workspace)\Helpful.DevOps" -Force
+                }                
+              errorActionPreference: 'stop'
 
-  - download: current
-    displayName: Retrieve artifact
-    artifact: Helpful.Hosting.WindowsService.Core
+  - deployment: VMDeploy_DemoService
+    dependsOn: VMDeploy_DevOps
+    condition: succeeded()
+    displayName: Deploy DemoService to IntegrationTesting
+    environment:
+      name: IntegrationTesting-EC2
+      resourceType: VirtualMachine
+      tags: service
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+  
+          - download: current
+            displayName: Download DemoService
+            artifact: 'DemoService'
 
-  - task: DotNetCoreCLI@2
-    displayName: 'nuget push'
-    inputs:
-      command: custom
-      custom: nuget
-      arguments: >
-        push $(Pipeline.Workspace)/**/*.nupkg
-        -s $(NugetOrgServerUrl)
-        -k $(NugetOrgApiKey)
+          - task: PowerShell@2
+            displayName: Run DevOps
+            inputs:
+              targetType: 'inline'
+              script: |
+                & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\uninstallService.ps1" -ServiceName "DemoService" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH
+                & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\installService.ps1" -ServiceName "DemoService" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH -PipelineWorkspacePath $(Pipeline.Workspace)                
+              errorActionPreference: 'stop'
+
+  - deployment: VMDeploy_DemoServiceBackgroundProcess
+    displayName: Deploy DemoServiceBackgroundProcess to IntegrationTesting
+    dependsOn: VMDeploy_DevOps
+    condition: succeeded()
+    environment:
+      name: IntegrationTesting-EC2
+      resourceType: VirtualMachine
+      tags: service
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+  
+          - download: current
+            displayName: Download DemoServiceBackgroundProcess
+            artifact: 'DemoServiceBackgroundProcess'
+
+          - task: PowerShell@2
+            displayName: Run DevOps
+            inputs:
+              targetType: 'inline'
+              script: |
+                & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\uninstallService.ps1" -ServiceName "DemoServiceBackgroundProcess" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH
+                & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\installService.ps1" -ServiceName "DemoServiceBackgroundProcess" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH -PipelineWorkspacePath $(Pipeline.Workspace)                
+              errorActionPreference: 'stop'
+
+  - deployment: VMDeploy_DemoServiceQuickStartApi
+    displayName: Deploy DemoServiceQuickStartApi to IntegrationTesting
+    dependsOn: VMDeploy_DevOps
+    condition: succeeded()
+    environment:
+      name: IntegrationTesting-EC2
+      resourceType: VirtualMachine
+      tags: service
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+  
+          - download: current
+            displayName: Download DemoServiceQuickStartApi
+            artifact: 'DemoServiceQuickStartApi'
+
+          - task: PowerShell@2
+            displayName: Run DevOps
+            inputs:
+              targetType: 'inline'
+              script: |
+                & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\uninstallService.ps1" -ServiceName "DemoServiceQuickStartApi" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH
+                & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\installService.ps1" -ServiceName "DemoServiceQuickStartApi" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH -PipelineWorkspacePath $(Pipeline.Workspace)                
+              errorActionPreference: 'stop'
+
+- stage: Publish
+  dependsOn: test
+  condition: succeeded()
+  jobs:
+
+  - job: PublishLocal
+    displayName: Publish to local feed
+    steps:
+  
+    - download: current
+      displayName: Retrieve artifact
+      artifact: Helpful.Hosting.WindowsService.Core
+  
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet push'
+      inputs:
+        command: 'push'
+        packagesToPush: '$(Pipeline.Workspace)/**/*.nupkg'
+        nuGetFeedType: 'internal'
+        publishVstsFeed: '$(helpful-libraries-feed-allbuilds-uri)'
+  
+  - job: PublishPublic
+    displayName: Publish to Nuget.org
+    condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
+    steps:
+  
+    - download: current
+      displayName: Retrieve artifact
+      artifact: Helpful.Hosting.WindowsService.Core
+  
+    - task: DotNetCoreCLI@2
+      displayName: 'nuget push'
+      inputs:
+        command: custom
+        custom: nuget
+        arguments: >
+          push $(Pipeline.Workspace)/**/*.nupkg
+          -s $(NugetOrgServerUrl)
+          -k $(NugetOrgApiKey)

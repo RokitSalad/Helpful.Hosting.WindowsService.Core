@@ -18,7 +18,7 @@ class Program
 {
     static void Main(string[] args)
     {
-        var runner = new HostRunner("DemoService_QuickStartApi", 5002);
+        var runner = new HostRunner("DemoService_QuickStartApi", "http://*:5002");
         var exit = runner.RunWebService();
     }
 }
@@ -26,7 +26,8 @@ class Program
 3. There is no 3, that's it!
 
 Hit F5, and you have a web api listening on port 5002. If you go to http://localhost:5002/healthcheck or 
-http://localhost:5002/swagger you'll see that your service is running.
+http://localhost:5002/swagger you'll see that your service is running. Just like TopShelf, because the hostname is * the service
+is listening publicly and on localhost.
 
 If you want your service to do more than just respond to http requests, you will want to make this a 
 compound service. Try this code:
@@ -35,13 +36,13 @@ class Program
 {
     static void Main(string[] args)
     {
-        var runner = new HostRunner("DemoService_BackgroundTask", 5003);
+        var runner = new HostRunner("DemoService_BackgroundTask", "https://localhost:5003");
         var exit = runner.RunCompoundService(obj => Console.WriteLine($"The time is: {DateTime.Now:T}"), null, 5000);
     }
 }
 ```
-Now when you hit F5 you can still see the service has a healthcheck and swagger endpoints (http://localhost:5003/healthcheck)
-(http://localhost:5003/swagger), but now you will also see output from the lambda in the command window, every 5 seconds.
+Now when you hit F5 you can still see the service has a healthcheck and swagger endpoints (https://localhost:5003/healthcheck)
+(https://localhost:5003/swagger), but now you will also see output from the lambda in the command window, every 5 seconds.
 Obviously, you can do much more with this than just print the time.
 
 ## Samples
@@ -79,7 +80,7 @@ class Program
 {
     static void Main(string[] args)
     {
-        var runner = new HostRunner<CustomStartup>("DemoService", 5001);
+        var runner = new HostRunner<CustomStartup>("DemoService", "http://*:5001", "https://*:5011");
         var exit = runner.RunWebService();
     }
 }

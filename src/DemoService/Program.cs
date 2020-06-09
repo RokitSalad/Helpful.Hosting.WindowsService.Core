@@ -6,7 +6,7 @@ namespace DemoService
     {
         static void Main(string[] args)
         {
-            var runner = new HostRunner<CustomStartup>("DemoService", 5001);
+            var runner = new HostRunner<CustomStartup>("DemoService", "http://*:8050", "https://*:8051");
             var exit = runner.RunWebService();
         }
     }
