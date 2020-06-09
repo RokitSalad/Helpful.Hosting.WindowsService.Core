@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DemoService", "..\DemoServi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DemoServiceQuickStartApi", "..\DemoServiceQuickStartApi\DemoServiceQuickStartApi.csproj", "{6FE061B2-5088-4A92-843E-CC74DE23401B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoServiceBackgroundProcess", "..\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.csproj", "{B3BC762C-7362-42DE-9C7F-28D0BFC3BB03}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DemoServiceBackgroundProcess", "..\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.csproj", "{B3BC762C-7362-42DE-9C7F-28D0BFC3BB03}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpful.Hosting.WindowsService.Core.IntegrationTests", "..\Helpful.Hosting.WindowsService.Core.IntegrationTests\Helpful.Hosting.WindowsService.Core.IntegrationTests.csproj", "{704996B3-5856-4598-BBB6-3F1BD4CD976F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{B3BC762C-7362-42DE-9C7F-28D0BFC3BB03}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3BC762C-7362-42DE-9C7F-28D0BFC3BB03}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3BC762C-7362-42DE-9C7F-28D0BFC3BB03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{704996B3-5856-4598-BBB6-3F1BD4CD976F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{704996B3-5856-4598-BBB6-3F1BD4CD976F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{704996B3-5856-4598-BBB6-3F1BD4CD976F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{704996B3-5856-4598-BBB6-3F1BD4CD976F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
