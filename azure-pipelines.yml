@@ -170,7 +170,7 @@ stages:
             inputs:
               targetType: 'inline'
               script: |
-                Get-ChildItem $(Pipeline.Workspace) -Filter Helpful.DevOps.*.zip | select -last 1 | ForEach-Object {
+                Get-ChildItem $(Pipeline.Workspace) -Filter Helpful.DevOps.*.zip | sort LastWriteTime | select -last 1 | ForEach-Object {
                   Expand-Archive $_.FullName -DestinationPath "$(Pipeline.Workspace)\Helpful.DevOps" -Force
                 }
                 & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\uninstallService.ps1" -ServiceName "DemoService" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH
@@ -209,7 +209,7 @@ stages:
             inputs:
               targetType: 'inline'
               script: |
-                Get-ChildItem $(Pipeline.Workspace) -Filter Helpful.DevOps.*.zip | select -last 1 | ForEach-Object {
+                Get-ChildItem $(Pipeline.Workspace) -Filter Helpful.DevOps.*.zip | sort LastWriteTime | select -last 1 | ForEach-Object {
                   Expand-Archive $_.FullName -DestinationPath "$(Pipeline.Workspace)\Helpful.DevOps" -Force
                 }
                 & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\uninstallService.ps1" -ServiceName "DemoServiceBackgroundProcess" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH
@@ -248,7 +248,7 @@ stages:
             inputs:
               targetType: 'inline'
               script: |
-                Get-ChildItem $(Pipeline.Workspace) -Filter Helpful.DevOps.*.zip | select -last 1 | ForEach-Object {
+                Get-ChildItem $(Pipeline.Workspace) -Filter Helpful.DevOps.*.zip | sort LastWriteTime | select -last 1 | ForEach-Object {
                   Expand-Archive $_.FullName -DestinationPath "$(Pipeline.Workspace)\Helpful.DevOps" -Force
                 }
                 & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\uninstallService.ps1" -ServiceName "DemoServiceQuickStartApi" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH
