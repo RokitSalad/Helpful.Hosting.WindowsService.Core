@@ -138,9 +138,42 @@ stages:
   condition: succeeded()
   jobs:
 
+  - deployment: VMDeploy_DevOps
+    displayName: Deploy Helpful.DevOps to target server
+    environment:
+      name: IntegrationTesting-EC2
+      resourceType: VirtualMachine
+      tags: service
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - task: UniversalPackages@0
+            displayName: Download DevOps Package
+            inputs:
+              command: 'download'
+              downloadDirectory: '$(Pipeline.Workspace)'
+              feedsToUse: 'internal'
+              vstsFeed: '$(helpful-libraries-feed-automation-uri)'
+              vstsFeedPackage: 'ba482169-4bdc-4fa9-a242-18a9b608af5d'
+              vstsPackageVersion: '*'
+              verbosity: 'Debug'
+
+          - task: PowerShell@2
+            displayName: Unpack DevOps
+            inputs:
+              targetType: 'inline'
+              script: |
+                Get-ChildItem $(Pipeline.Workspace) -Filter Helpful.DevOps.*.zip | sort LastWriteTime | select -last 1 | ForEach-Object {
+                  Expand-Archive $_.FullName -DestinationPath "$(Pipeline.Workspace)\Helpful.DevOps" -Force
+                }                
+              errorActionPreference: 'stop'
+
   - deployment: VMDeploy_DemoService
-    displayName: Deploy DemoService to IntegrationTesting
+    dependsOn: VMDeploy_DevOps
     condition: succeeded()
+    displayName: Deploy DemoService to IntegrationTesting
     environment:
       name: IntegrationTesting-EC2
       resourceType: VirtualMachine
@@ -154,31 +187,18 @@ stages:
             displayName: Download DemoService
             artifact: 'DemoService'
 
-          - task: UniversalPackages@0
-            displayName: Download DevOps Package
-            inputs:
-              command: 'download'
-              downloadDirectory: '$(Pipeline.Workspace)'
-              feedsToUse: 'internal'
-              vstsFeed: '$(helpful-libraries-feed-automation-uri)'
-              vstsFeedPackage: 'ba482169-4bdc-4fa9-a242-18a9b608af5d'
-              vstsPackageVersion: '*'
-              verbosity: 'Debug'
-
           - task: PowerShell@2
-            displayName: Unpack and Run DevOps
+            displayName: Run DevOps
             inputs:
               targetType: 'inline'
               script: |
-                Get-ChildItem $(Pipeline.Workspace) -Filter Helpful.DevOps.*.zip | sort LastWriteTime | select -last 1 | ForEach-Object {
-                  Expand-Archive $_.FullName -DestinationPath "$(Pipeline.Workspace)\Helpful.DevOps" -Force
-                }
                 & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\uninstallService.ps1" -ServiceName "DemoService" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH
                 & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\installService.ps1" -ServiceName "DemoService" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH -PipelineWorkspacePath $(Pipeline.Workspace)                
               errorActionPreference: 'stop'
 
   - deployment: VMDeploy_DemoServiceBackgroundProcess
     displayName: Deploy DemoServiceBackgroundProcess to IntegrationTesting
+    dependsOn: VMDeploy_DevOps
     condition: succeeded()
     environment:
       name: IntegrationTesting-EC2
@@ -192,32 +212,19 @@ stages:
           - download: current
             displayName: Download DemoServiceBackgroundProcess
             artifact: 'DemoServiceBackgroundProcess'
-  
-          - task: UniversalPackages@0
-            displayName: Download DevOps Package
-            inputs:
-              command: 'download'
-              downloadDirectory: '$(Pipeline.Workspace)'
-              feedsToUse: 'internal'
-              vstsFeed: '$(helpful-libraries-feed-automation-uri)'
-              vstsFeedPackage: 'ba482169-4bdc-4fa9-a242-18a9b608af5d'
-              vstsPackageVersion: '*'
-              verbosity: 'Debug'
 
           - task: PowerShell@2
-            displayName: Unpack and Run DevOps
+            displayName: Run DevOps
             inputs:
               targetType: 'inline'
               script: |
-                Get-ChildItem $(Pipeline.Workspace) -Filter Helpful.DevOps.*.zip | sort LastWriteTime | select -last 1 | ForEach-Object {
-                  Expand-Archive $_.FullName -DestinationPath "$(Pipeline.Workspace)\Helpful.DevOps" -Force
-                }
                 & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\uninstallService.ps1" -ServiceName "DemoServiceBackgroundProcess" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH
                 & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\installService.ps1" -ServiceName "DemoServiceBackgroundProcess" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH -PipelineWorkspacePath $(Pipeline.Workspace)                
               errorActionPreference: 'stop'
 
   - deployment: VMDeploy_DemoServiceQuickStartApi
     displayName: Deploy DemoServiceQuickStartApi to IntegrationTesting
+    dependsOn: VMDeploy_DevOps
     condition: succeeded()
     environment:
       name: IntegrationTesting-EC2
@@ -231,26 +238,12 @@ stages:
           - download: current
             displayName: Download DemoServiceQuickStartApi
             artifact: 'DemoServiceQuickStartApi'
-  
-          - task: UniversalPackages@0
-            displayName: Download DevOps Package
-            inputs:
-              command: 'download'
-              downloadDirectory: '$(Pipeline.Workspace)'
-              feedsToUse: 'internal'
-              vstsFeed: '$(helpful-libraries-feed-automation-uri)'
-              vstsFeedPackage: 'ba482169-4bdc-4fa9-a242-18a9b608af5d'
-              vstsPackageVersion: '*'
-              verbosity: 'Debug'
 
           - task: PowerShell@2
-            displayName: Unpack and Run DevOps
+            displayName: Run DevOps
             inputs:
               targetType: 'inline'
               script: |
-                Get-ChildItem $(Pipeline.Workspace) -Filter Helpful.DevOps.*.zip | sort LastWriteTime | select -last 1 | ForEach-Object {
-                  Expand-Archive $_.FullName -DestinationPath "$(Pipeline.Workspace)\Helpful.DevOps" -Force
-                }
                 & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\uninstallService.ps1" -ServiceName "DemoServiceQuickStartApi" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH
                 & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\installService.ps1" -ServiceName "DemoServiceQuickStartApi" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH -PipelineWorkspacePath $(Pipeline.Workspace)                
               errorActionPreference: 'stop'
@@ -262,7 +255,6 @@ stages:
 
   - job: PublishLocal
     displayName: Publish to local feed
-    condition: succeeded()
     steps:
   
     - download: current
@@ -279,7 +271,7 @@ stages:
   
   - job: PublishPublic
     displayName: Publish to Nuget.org
-    condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
+    condition: eq(variables['build.sourceBranch'], 'refs/heads/master'))
     steps:
   
     - download: current
