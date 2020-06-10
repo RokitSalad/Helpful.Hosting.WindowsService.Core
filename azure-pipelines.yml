@@ -274,7 +274,7 @@ stages:
         displayName: run integration tests
         inputs:
           testSelector: 'testAssemblies'
-          testAssemblyVer2: 'bin\**\*IntegrationTest*.dll'
+          testAssemblyVer2: '**\bin\**\*IntegrationTests.dll'
           searchFolder: '$(System.DefaultWorkingDirectory)'
           runInParallel: true
           runTestsInIsolation: true
