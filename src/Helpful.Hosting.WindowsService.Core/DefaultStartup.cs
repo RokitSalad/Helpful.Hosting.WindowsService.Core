@@ -1,12 +1,16 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Runtime.CompilerServices;
+using Helpful.Logging.Standard;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 
 namespace Helpful.Hosting.WindowsService.Core
 {
     public class DefaultStartup
     {
+        private ILogger Logger => this.GetLogger();
         public IConfiguration Configuration { get; }
 
         public DefaultStartup(IConfiguration configuration)
@@ -17,6 +21,7 @@ namespace Helpful.Hosting.WindowsService.Core
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            Logger.LogInformationWithContext("Configuring service.");
             BasicConfiguration.ConfigureBasicServices(services);
         }
 
@@ -24,6 +29,7 @@ namespace Helpful.Hosting.WindowsService.Core
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            Logger.LogInformationWithContext("Configuring app.");
             BasicConfiguration.Configure(app, env);
         }
     }
