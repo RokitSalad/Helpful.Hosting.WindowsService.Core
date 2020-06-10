@@ -133,7 +133,8 @@ stages:
     - publish: '$(Build.ArtifactStagingDirectory)\DemoServiceQuickStartApi'
       artifact: DemoServiceQuickStartApi
 
-- stage: Integration Test
+- stage: IntegrationTest
+  displayName: Integration Test
   dependsOn: BuildandPackage
   condition: succeeded()
   jobs:
