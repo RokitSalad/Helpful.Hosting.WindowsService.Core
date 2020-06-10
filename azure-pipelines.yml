@@ -283,7 +283,7 @@ stages:
           configuration: 'Release'
 
 - stage: Publish
-  dependsOn: test
+  dependsOn: IntegrationTest
   condition: succeeded()
   jobs:
 
