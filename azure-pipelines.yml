@@ -250,7 +250,10 @@ stages:
 
   - job: RunInegrationTests
     displayName: Run Integration Tests
-    dependsOn: and(VMDeploy_DemoServiceQuickStartApi, VMDeploy_DemoServiceBackgroundProcess, VMDeploy_DemoService)
+    dependsOn: 
+    - VMDeploy_DemoServiceQuickStartApi
+    - VMDeploy_DemoServiceBackgroundProcess
+    - VMDeploy_DemoService
     condition: succeeded()
     steps:
       
