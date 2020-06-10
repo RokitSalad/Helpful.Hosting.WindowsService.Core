@@ -248,6 +248,36 @@ stages:
                 & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\installService.ps1" -ServiceName "DemoServiceQuickStartApi" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH -PipelineWorkspacePath $(Pipeline.Workspace)                
               errorActionPreference: 'stop'
 
+  - job: RunInegrationTests
+    displayName: Run Integration Tests
+    dependsOn: and(VMDeploy_DemoServiceQuickStartApi, VMDeploy_DemoServiceBackgroundProcess, VMDeploy_DemoService)
+    condition: succeeded()
+    steps:
+      
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet restore - integration tests'
+        inputs:
+          command: 'restore'
+          feedsToUse: 'select'
+          projects: '**/*.csproj'
+    
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet build - integration tests'
+        inputs:
+          command: 'build'
+          projects: '**/*IntegrationTest*.csproj'
+
+      - task: VSTest@2
+        displayName: run integration tests
+        inputs:
+          testSelector: 'testAssemblies'
+          testAssemblyVer2: '**\*IntegrationTest*.dll'
+          searchFolder: '$(System.DefaultWorkingDirectory)'
+          runInParallel: true
+          runTestsInIsolation: true
+          testRunTitle: 'Helpful Hosting Integration Tests'
+          configuration: 'Release'
+
 - stage: Publish
   dependsOn: test
   condition: succeeded()
