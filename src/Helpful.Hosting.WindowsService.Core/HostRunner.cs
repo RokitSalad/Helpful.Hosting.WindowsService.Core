@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Cryptography.X509Certificates;
 using Helpful.Logging.Standard;
 using Topshelf;
 
@@ -6,31 +7,42 @@ namespace Helpful.Hosting.WindowsService.Core
 {
     public class HostRunner : HostRunner<DefaultStartup>
     {
-        public HostRunner(string serviceName, params string[] urls) : base(serviceName, urls)
+        public HostRunner(string serviceName, params ListenerInfo[] listenerInfo) : base(serviceName, listenerInfo)
         {
             
         }
     }
 
+    public class ListenerInfo
+    {
+        public string IpAddress { get; set; }
+        public int Port { get; set; }
+        public bool UseSsl { get; set; }
+        internal string Protocol => UseSsl ? "https" : "http";
+        public StoreName SslCertStoreName { get; set; }
+        public string SslCertSubject { get; set; }
+        public bool AllowInvalidCert { get; set; }
+    }
+
     public class HostRunner<TStartup> where TStartup : class
     {
         private readonly string _serviceName;
-        private readonly string[] _urls;
+        private readonly ListenerInfo[] _listenerInfo;
 
-        public HostRunner(string serviceName, params string[] urls)
+        public HostRunner(string serviceName, params ListenerInfo[] listenerInfo)
         {
             _serviceName = serviceName;
-            _urls = urls;
+            _listenerInfo = listenerInfo;
         }
 
         public TopshelfExitCode RunWebService()
         {
-            return Run(new BasicWebService<TStartup>(_urls));
+            return Run(new BasicWebService<TStartup>(_listenerInfo));
         }
 
         public TopshelfExitCode RunCompoundService(Action<object> singleRun, object state, int scheduleMilliseconds)
         {
-            return Run(new TimerService<TStartup>(singleRun, state, scheduleMilliseconds, _urls));
+            return Run(new TimerService<TStartup>(singleRun, state, scheduleMilliseconds, _listenerInfo));
         }
 
         public TopshelfExitCode Run(BasicWebService<TStartup> service)
@@ -51,7 +63,7 @@ namespace Helpful.Hosting.WindowsService.Core
                                 s.WhenStopped((ts, hc) => ts.Stop(hc));
                             }
                         );
-
+                        
                         x.SetServiceName(_serviceName);
                         x.SetDisplayName(_serviceName);
                         x.SetDescription(_serviceName);

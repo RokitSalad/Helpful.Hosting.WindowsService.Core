@@ -10,7 +10,7 @@ namespace Helpful.Hosting.WindowsService.Core.IntegrationTests
     public class EndpointTests
     {
         private HttpClient _httpClient;
-        private static int[] _ports = {8050, 8051, 8052, 8053};
+        private static (string, int)[] _httpInfo = {("http", 8050), ("https", 8051), ("http", 8052), ("http", 8053)};
         private IConfigurationRoot _config;
 
         [OneTimeSetUp]
@@ -29,9 +29,9 @@ namespace Helpful.Hosting.WindowsService.Core.IntegrationTests
         }
 
         [Test]
-        public async Task HealthCheckIsGreen([ValueSource(nameof(_ports))] int port)
+        public async Task HealthCheckIsGreen([ValueSource(nameof(_httpInfo))] (string proto, int port) httpInfo)
         {
-            var uri = $"{_config.GetSection("environmentSpecificSettings")["baseUrl"]}:{port}/healthcheck";
+            var uri = $"{httpInfo.proto}://{_config.GetSection("environmentSpecificSettings")["baseUrl"]}:{httpInfo.port}/healthcheck";
             var req = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
@@ -42,9 +42,9 @@ namespace Helpful.Hosting.WindowsService.Core.IntegrationTests
         }
 
         [Test]
-        public async Task SwaggerEndpointResponds([ValueSource(nameof(_ports))] int port)
+        public async Task SwaggerEndpointResponds([ValueSource(nameof(_httpInfo))] (string proto, int port) httpInfo)
         {
-            var uri = $"{_config.GetSection("environmentSpecificSettings")["baseUrl"]}:{port}/swagger";
+            var uri = $"{httpInfo.proto}://{_config.GetSection("environmentSpecificSettings")["baseUrl"]}:{httpInfo.port}/swagger";
             var req = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,

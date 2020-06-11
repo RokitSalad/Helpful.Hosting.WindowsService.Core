@@ -1,4 +1,5 @@
-﻿using Helpful.Hosting.WindowsService.Core;
+﻿using System.Security.Cryptography.X509Certificates;
+using Helpful.Hosting.WindowsService.Core;
 
 namespace DemoService
 {
@@ -6,7 +7,18 @@ namespace DemoService
     {
         static void Main(string[] args)
         {
-            var runner = new HostRunner<CustomStartup>("DemoService", "http://*:8050", "http://*:8051");
+            var runner = new HostRunner<CustomStartup>("DemoService", new ListenerInfo
+                {
+                    Port = 8050
+                },
+                new ListenerInfo
+                {
+                    AllowInvalidCert = true,
+                    Port = 8051,
+                    SslCertStoreName = StoreName.My,
+                    SslCertSubject = "ec2-3-104-124-78.ap-southeast-2.compute.amazonaws.com",
+                    UseSsl = true
+                });
             var exit = runner.RunWebService();
         }
     }
