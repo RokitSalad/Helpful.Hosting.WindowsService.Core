@@ -31,7 +31,7 @@ namespace Helpful.Hosting.WindowsService.Core.IntegrationTests
         [Test]
         public async Task HealthCheckIsGreen([ValueSource(nameof(_httpInfo))] (string proto, int port) httpInfo)
         {
-            var uri = $"{httpInfo.proto}://{_config.GetSection("environmentSpecificSettings")["baseUrl"]}:{httpInfo.port}/healthcheck";
+            var uri = $"{httpInfo.proto}://{_config.GetSection("environmentSpecificSettings")["hostName"]}:{httpInfo.port}/healthcheck";
             var req = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
@@ -44,7 +44,7 @@ namespace Helpful.Hosting.WindowsService.Core.IntegrationTests
         [Test]
         public async Task SwaggerEndpointResponds([ValueSource(nameof(_httpInfo))] (string proto, int port) httpInfo)
         {
-            var uri = $"{httpInfo.proto}://{_config.GetSection("environmentSpecificSettings")["baseUrl"]}:{httpInfo.port}/swagger";
+            var uri = $"{httpInfo.proto}://{_config.GetSection("environmentSpecificSettings")["hostName"]}:{httpInfo.port}/swagger";
             var req = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,

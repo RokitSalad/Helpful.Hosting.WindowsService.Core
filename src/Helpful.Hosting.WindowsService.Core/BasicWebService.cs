@@ -47,13 +47,17 @@ namespace Helpful.Hosting.WindowsService.Core
                         {
                             if (string.IsNullOrWhiteSpace(info.IpAddress))
                             {
-                                opt.ListenAnyIP(info.Port, options =>
+                                if (info.UseSsl)
                                 {
-                                    if (info.UseSsl)
+                                    opt.ListenAnyIP(info.Port, options =>
                                     {
                                         options.UseHttps(info.SslCertStoreName, info.SslCertSubject, info.AllowInvalidCert);
-                                    }
-                                });
+                                    });
+                                }
+                                else
+                                {
+                                    opt.ListenAnyIP(info.Port);
+                                }
                             }
                             else
                             {
