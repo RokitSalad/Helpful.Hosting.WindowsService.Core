@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
@@ -47,20 +48,25 @@ namespace Helpful.Hosting.WindowsService.Core
                         {
                             if (string.IsNullOrWhiteSpace(info.IpAddress))
                             {
+                                Console.WriteLine("Ip address not present.");
                                 if (info.UseSsl)
                                 {
+                                    Console.WriteLine($"Using ssl: {info.Port}");
                                     opt.ListenAnyIP(info.Port, options =>
                                     {
+                                        Console.WriteLine($"Configuratin ssl: {info.SslCertStoreName}, {info.SslCertSubject}, {info.AllowInvalidCert}.");
                                         options.UseHttps(info.SslCertStoreName, info.SslCertSubject, info.AllowInvalidCert);
                                     });
                                 }
                                 else
                                 {
+                                    Console.WriteLine($"Not using ssl: {info.Port}");
                                     opt.ListenAnyIP(info.Port);
                                 }
                             }
                             else
                             {
+                                Console.WriteLine($"Ip address provided: {info.IpAddress}");
                                 opt.Listen(IPAddress.Parse(info.IpAddress), info.Port);
                             }
                         }

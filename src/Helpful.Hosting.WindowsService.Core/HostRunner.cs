@@ -54,21 +54,38 @@ namespace Helpful.Hosting.WindowsService.Core
                 (
                     x =>
                     {
-                        x.Service<BasicWebService<TStartup>>
-                        (
-                            s =>
-                            {
-                                s.ConstructUsing(svc => service);
-                                s.WhenStarted((ts, hc) => ts.Start(hc));
-                                s.WhenStopped((ts, hc) => ts.Stop(hc));
-                            }
-                        );
+                        try
+                        {
+                            x.Service<BasicWebService<TStartup>>
+                            (
+                                s =>
+                                {
+                                    s.ConstructUsing(svc => service);
+                                    s.WhenStarted((ts, hc) => ts.Start(hc));
+                                    s.WhenStopped((ts, hc) => ts.Stop(hc));
+                                }
+                            );
                         
-                        x.SetServiceName(_serviceName);
-                        x.SetDisplayName(_serviceName);
-                        x.SetDescription(_serviceName);
-                        x.EnableShutdown();
-                        x.RunAsLocalSystem();
+                            x.SetServiceName(_serviceName);
+                            x.SetDisplayName(_serviceName);
+                            x.SetDescription(_serviceName);
+                            x.EnableShutdown();
+                            x.RunAsLocalSystem();
+                        }
+                        catch (AggregateException ae)
+                        {
+                            ae.Handle((e) =>
+                            {
+                                this.GetLogger().LogFatalWithContext(e, "Fatal exception while attempting to start service.");
+                                return false;
+                            });
+                            throw;
+                        }
+                        catch (Exception e)
+                        {
+                            this.GetLogger().LogFatalWithContext(e, "Fatal exception while attempting to start service.");
+                            throw;
+                        }
                     }
                 );
             }
