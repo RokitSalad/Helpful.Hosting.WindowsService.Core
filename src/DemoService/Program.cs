@@ -18,7 +18,7 @@ namespace DemoService
                     Port = 8051,
                     SslCertStoreName = StoreName.My,
                     SslCertSubject = "CN=ec2-3-104-124-78.ap-southeast-2.compute.amazonaws.com",
-                    UseSsl = true
+                    UseTls = true
                 });
             var exit = runner.RunWebService(LogEventLevel.Debug);
         }

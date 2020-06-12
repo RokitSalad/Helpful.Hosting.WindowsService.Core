@@ -120,3 +120,94 @@ Other things to note here are the use of a certificate for configuring SSL, and 
 
 ## Build Status
 [![Build Status](https://dev.azure.com/pete0159/Helpful.Libraries/_apis/build/status/RokitSalad.Helpful.Hosting.WindowsService.Core?branchName=master)](https://dev.azure.com/pete0159/Helpful.Libraries/_build/latest?definitionId=4&branchName=master)
+
+## Configuration in More Detail
+### Service account
+Service credentials can be injected when running any of:
+```c#
+public class HostRunner<TStartup> where TStartup : class
+{
+    ...
+
+    public TopshelfExitCode RunWebService(LogEventLevel logLevel = LogEventLevel.Information, Credentials credentials = null)
+    {
+        ...
+    }
+
+    public TopshelfExitCode RunCompoundService(Action<object> serviceAction, object state, int scheduleMilliseconds, LogEventLevel logLevel = LogEventLevel.Information, Credentials credentials = null)
+    {
+        ...
+    }
+
+    public TopshelfExitCode Run(BasicWebService<TStartup> service, LogEventLevel logLevel = LogEventLevel.Information, Credentials credentials = null)
+    {
+        ...
+    }
+
+    ...
+
+}
+```
+The service will create Swagger and health check endpoints for you automatically, so the account the service is running under must have permissions to reserve TCP ports. For this reason, the default behaviour is to use the Local System account, as this is the only standard account available which will have access to do this. 
+
+*Using the Local System account is not advised. This account has more access than an Administrator.*
+
+### Log levels
+By default, the logging level is set to Information. Serilog is the logging package used, so any level of logging available in Serilog is permitted. 
+* Verbose
+* Debug
+* Information
+* Warning
+* Error
+* Fatal
+
+The log level can be injected when running the service in one of the HostRunner methods, above.
+
+### HTTPS
+The constructor of HostRunner allows the injection of a collection of ListenerInfo:
+```c#
+public HostRunner(string serviceName, params ListenerInfo[] listenerInfo)
+
+...
+
+/// <summary>
+/// Defines an HTTP binding.
+/// </summary>
+public class ListenerInfo
+{
+    /// <summary>
+    /// The IP address to listen on. Leave null to listen on all addresses.
+    /// </summary>
+    public string IpAddress { get; set; }
+
+    /// <summary>
+    /// The port to listen on.
+    /// </summary>
+    public int Port { get; set; }
+
+    /// <summary>
+    /// Whether to use TLS.
+    /// </summary>
+    public bool UseTls { get; set; }
+
+    /// <summary>
+    /// The name of the store where the certificate is stored which should be used for this binding. Leave null if UseTls is false.
+    /// </summary>
+    public StoreName SslCertStoreName { get; set; }
+
+    /// <summary>
+    /// The subject of the certificate which should be used for this binding. Leave null if UseTls is false.
+    /// </summary>
+    public string SslCertSubject { get; set; }
+
+    /// <summary>
+    /// A flag to indicate whether to allow the located certificate to be used if it is invalid.
+    /// </summary>
+    public bool AllowInvalidCert { get; set; }
+}
+```
+In order to respond to HTTPS calls, your service must have access to a certificate identifiable by the store name and subject. Adding multiple ListenerInfo's will result in multiple bindings.
+
+### Helpful.Logging.Standard
+[Helpful.Logging.Standard](https://github.com/RokitSalad/Helpful.Logging.Standard) is automatically referenced and configured for logging to the console and to a rolling text file. See the link for usage from your own code.
+
