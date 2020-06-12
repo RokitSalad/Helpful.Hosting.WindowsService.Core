@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography.X509Certificates;
 using Helpful.Hosting.WindowsService.Core;
+using Serilog.Events;
 
 namespace DemoService
 {
@@ -19,7 +20,7 @@ namespace DemoService
                     SslCertSubject = "CN=ec2-3-104-124-78.ap-southeast-2.compute.amazonaws.com",
                     UseSsl = true
                 });
-            var exit = runner.RunWebService();
+            var exit = runner.RunWebService(LogEventLevel.Debug);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography.X509Certificates;
 using Helpful.Logging.Standard;
+using Serilog.Events;
 using Topshelf;
 
 namespace Helpful.Hosting.WindowsService.Core
@@ -35,21 +36,21 @@ namespace Helpful.Hosting.WindowsService.Core
             _listenerInfo = listenerInfo;
         }
 
-        public TopshelfExitCode RunWebService()
+        public TopshelfExitCode RunWebService(LogEventLevel logLevel = LogEventLevel.Information)
         {
-            return Run(new BasicWebService<TStartup>(_listenerInfo));
+            return Run(new BasicWebService<TStartup>(_listenerInfo), logLevel);
         }
 
-        public TopshelfExitCode RunCompoundService(Action<object> singleRun, object state, int scheduleMilliseconds)
+        public TopshelfExitCode RunCompoundService(Action<object> singleRun, object state, int scheduleMilliseconds, LogEventLevel logLevel = LogEventLevel.Information)
         {
-            return Run(new TimerService<TStartup>(singleRun, state, scheduleMilliseconds, _listenerInfo));
+            return Run(new TimerService<TStartup>(singleRun, state, scheduleMilliseconds, _listenerInfo), logLevel);
         }
 
-        public TopshelfExitCode Run(BasicWebService<TStartup> service)
+        public TopshelfExitCode Run(BasicWebService<TStartup> service, LogEventLevel logLevel = LogEventLevel.Information)
         {
             try
             {
-                ConfigureLogger.StandardSetup();
+                ConfigureLogger.StandardSetup(logLevel: logLevel);
                 return HostFactory.Run
                 (
                     x =>
