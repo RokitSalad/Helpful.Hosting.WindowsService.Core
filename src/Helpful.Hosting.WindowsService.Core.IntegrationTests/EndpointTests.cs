@@ -19,10 +19,14 @@ namespace Helpful.Hosting.WindowsService.Core.IntegrationTests
             _config = new ConfigurationBuilder()
                 .AddJsonFile("appSettings.json", optional: false, reloadOnChange: true)
                 .Build();
-            _httpClient = new HttpClient();
-
-            ServicePointManager.ServerCertificateValidationCallback +=
-                (sender, cert, chain, sslPolicyErrors) => true;
+            var handler = new HttpClientHandler();
+            handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+            handler.ServerCertificateCustomValidationCallback =
+                (httpRequestMessage, cert, cetChain, policyErrors) =>
+                {
+                    return true;
+                };
+            _httpClient = new HttpClient(handler);
         }
 
         [OneTimeTearDown]
