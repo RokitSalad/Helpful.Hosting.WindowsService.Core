@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security;
 using System.Security.Cryptography.X509Certificates;
 using Helpful.Logging.Standard;
 using Serilog.Events;
@@ -14,17 +15,6 @@ namespace Helpful.Hosting.WindowsService.Core
         }
     }
 
-    public class ListenerInfo
-    {
-        public string IpAddress { get; set; }
-        public int Port { get; set; }
-        public bool UseSsl { get; set; }
-        internal string Protocol => UseSsl ? "https" : "http";
-        public StoreName SslCertStoreName { get; set; }
-        public string SslCertSubject { get; set; }
-        public bool AllowInvalidCert { get; set; }
-    }
-
     public class HostRunner<TStartup> where TStartup : class
     {
         private readonly string _serviceName;
@@ -36,17 +26,17 @@ namespace Helpful.Hosting.WindowsService.Core
             _listenerInfo = listenerInfo;
         }
 
-        public TopshelfExitCode RunWebService(LogEventLevel logLevel = LogEventLevel.Information)
+        public TopshelfExitCode RunWebService(LogEventLevel logLevel = LogEventLevel.Information, Credentials credentials = null)
         {
-            return Run(new BasicWebService<TStartup>(_listenerInfo), logLevel);
+            return Run(new BasicWebService<TStartup>(_listenerInfo), logLevel, credentials);
         }
 
-        public TopshelfExitCode RunCompoundService(Action<object> singleRun, object state, int scheduleMilliseconds, LogEventLevel logLevel = LogEventLevel.Information)
+        public TopshelfExitCode RunCompoundService(Action<object> singleRun, object state, int scheduleMilliseconds, LogEventLevel logLevel = LogEventLevel.Information, Credentials credentials = null)
         {
-            return Run(new TimerService<TStartup>(singleRun, state, scheduleMilliseconds, _listenerInfo), logLevel);
+            return Run(new TimerService<TStartup>(singleRun, state, scheduleMilliseconds, _listenerInfo), logLevel, credentials);
         }
 
-        public TopshelfExitCode Run(BasicWebService<TStartup> service, LogEventLevel logLevel = LogEventLevel.Information)
+        public TopshelfExitCode Run(BasicWebService<TStartup> service, LogEventLevel logLevel = LogEventLevel.Information, Credentials credentials = null)
         {
             try
             {
@@ -71,7 +61,15 @@ namespace Helpful.Hosting.WindowsService.Core
                             x.SetDisplayName(_serviceName);
                             x.SetDescription(_serviceName);
                             x.EnableShutdown();
-                            x.RunAsLocalSystem();
+                            if(credentials == null)
+                            {
+                                x.RunAsLocalSystem();
+                            }
+                            else
+                            {
+                                x.RunAs(credentials.Username, credentials.Password);
+                            }
+
                         }
                         catch (AggregateException ae)
                         {
@@ -109,5 +107,21 @@ namespace Helpful.Hosting.WindowsService.Core
                 return TopshelfExitCode.AbnormalExit;
             }
         }
+    }
+
+    public class ListenerInfo
+    {
+        public string IpAddress { get; set; }
+        public int Port { get; set; }
+        public bool UseSsl { get; set; }
+        public StoreName SslCertStoreName { get; set; }
+        public string SslCertSubject { get; set; }
+        public bool AllowInvalidCert { get; set; }
+    }
+
+    public class Credentials
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }
     }
 }
