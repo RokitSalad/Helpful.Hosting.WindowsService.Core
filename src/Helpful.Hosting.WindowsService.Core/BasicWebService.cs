@@ -3,7 +3,9 @@ using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using Helpful.Logging.Standard;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 using Topshelf;
 
 namespace Helpful.Hosting.WindowsService.Core
@@ -24,6 +26,11 @@ namespace Helpful.Hosting.WindowsService.Core
         public BasicWebService(params ListenerInfo[] listenerInfo)
         {
             _listenerInfo = listenerInfo;
+        }
+
+        ~BasicWebService()
+        {
+            WebServiceHolder?.Dispose();
         }
 
         public virtual bool Start(HostControl hostControl)
@@ -54,11 +61,7 @@ namespace Helpful.Hosting.WindowsService.Core
                                 if (info.UseSsl)
                                 {
                                     logger.LogDebugWithContext($"Using ssl: {info.Port}");
-                                    opt.ListenAnyIP(info.Port, options =>
-                                    {
-                                        logger.LogDebugWithContext($"Configuratin ssl: {info.SslCertStoreName}, {info.SslCertSubject}, {info.AllowInvalidCert}.");
-                                        options.UseHttps(info.SslCertStoreName, info.SslCertSubject, info.AllowInvalidCert);
-                                    });
+                                    opt.ListenAnyIP(info.Port, ConfigureKestrelForSsl(logger, info));
                                 }
                                 else
                                 {
@@ -74,7 +77,28 @@ namespace Helpful.Hosting.WindowsService.Core
                         }
                     });
                     webBuilder.UseStartup<T>();
-                    //webBuilder.UseUrls(listenerInfo);
                 });
+
+        private static Action<ListenOptions> ConfigureKestrelForSsl(ILogger logger, ListenerInfo info)
+        {
+            return options =>
+            {
+                logger.LogDebugWithContext($"Configuring ssl: {info.SslCertStoreName}, {info.SslCertSubject}, {info.AllowInvalidCert}.");
+                X509Store store = new X509Store(info.SslCertStoreName,
+                    StoreLocation.LocalMachine);
+                store.Open(OpenFlags.ReadOnly);
+
+                foreach (var cert in store.Certificates)
+                {
+                    if (string.Equals(cert.Subject, info.SslCertSubject,
+                        StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        logger.LogDebugWithContext("Found certificate.");
+                        options.UseHttps(cert);
+                        break;
+                    }
+                }
+            };
+        }
     }
 }

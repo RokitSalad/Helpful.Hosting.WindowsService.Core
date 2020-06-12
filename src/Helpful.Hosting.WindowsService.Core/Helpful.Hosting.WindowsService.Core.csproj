@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <PackageReference Include="Helpful.Logging.Standard" Version="1.0.21" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Https" Version="2.2.0" />
     <PackageReference Include="Microsoft.NETCore.App" Version="2.2.8" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.1" />
     <PackageReference Include="Topshelf" Version="4.2.1" />
