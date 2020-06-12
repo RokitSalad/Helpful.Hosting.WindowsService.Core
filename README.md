@@ -3,9 +3,8 @@ Base package for dotnet core 3.x microservices
 
 *This is still under development - expect significant changes in implementation until v1.1.*
 ## Overview
-This package uses [TopShelf](http://topshelf-project.com/) to give a developer the fast, 
-low code approach to getting a service running. There are different ways to override the default behaviour, 
-allowing a developer to choose between:
+This package uses [TopShelf](http://topshelf-project.com/) to give a developer fast, 
+low code approach to getting a service running. There are different ways to override the default behaviour, allowing a developer to choose between:
 * Just my standard configuration
 * My configuration plus other options
 * Fully implementing their own configuration.
@@ -18,15 +17,18 @@ class Program
 {
     static void Main(string[] args)
     {
-        var runner = new HostRunner("DemoService_QuickStartApi", "http://*:5002");
-        var exit = runner.RunWebService();
+        var runner = new HostRunner("DemoService_QuickStartApi", new ListenerInfo
+            {
+                Port = 8053
+            });
+            var exit = runner.RunWebService();
     }
 }
 ```
 3. There is no 3, that's it!
 
-Hit F5, and you have a web api listening on port 5002. If you go to http://localhost:5002/healthcheck or 
-http://localhost:5002/swagger you'll see that your service is running. Just like TopShelf, because the hostname is * the service
+Hit F5, and you have a web api listening on port 5002. If you go to http://localhost:8053/healthcheck or 
+http://localhost:8053/swagger you'll see that your service is running. Just like TopShelf, because the hostname is * the service
 is listening publicly and on localhost.
 
 If you want your service to do more than just respond to http requests, you will want to make this a 
@@ -36,13 +38,16 @@ class Program
 {
     static void Main(string[] args)
     {
-        var runner = new HostRunner("DemoService_BackgroundTask", "https://localhost:5003");
-        var exit = runner.RunCompoundService(obj => Console.WriteLine($"The time is: {DateTime.Now:T}"), null, 5000);
+        var runner = new HostRunner("DemoService_BackgroundTask", new ListenerInfo
+            {
+                Port = 8052
+            });
+            var exit = runner.RunCompoundService(obj => Console.WriteLine($"The time is: {DateTime.Now:T}"), null, 5000);
     }
 }
 ```
-Now when you hit F5 you can still see the service has a healthcheck and swagger endpoints (https://localhost:5003/healthcheck)
-(https://localhost:5003/swagger), but now you will also see output from the lambda in the command window, every 5 seconds.
+Now when you hit F5 you can still see the service has a healthcheck and swagger endpoints (https://localhost:8052/healthcheck)
+(https://localhost:8052/swagger), but now you will also see output from the lambda in the command window, every 5 seconds.
 Obviously, you can do much more with this than just print the time.
 
 ## Samples
@@ -80,8 +85,19 @@ class Program
 {
     static void Main(string[] args)
     {
-        var runner = new HostRunner<CustomStartup>("DemoService", "http://*:5001", "https://*:5011");
-        var exit = runner.RunWebService();
+        var runner = new HostRunner<CustomStartup>("DemoService", new ListenerInfo
+                {
+                    Port = 8050
+                },
+                new ListenerInfo
+                {
+                    AllowInvalidCert = true,
+                    Port = 8051,
+                    SslCertStoreName = StoreName.My,
+                    SslCertSubject = "CN=localhost", 
+                    UseSsl = true
+                });
+            var exit = runner.RunWebService(LogEventLevel.Debug);
     }
 }
 ```
@@ -93,6 +109,8 @@ BasicConfiguration.Configure(app, env);
 ```
 These allow you to still use the standard configuration which you'd get without a custom setup, and then add to it just
 like you would in any other setup class.
+
+Other things to note here are the use of a certificate for configuring SSL, and setting the log level to Debug (the default level is Information).
 
 ### Options
 1. Use all the defaults - *hardly any coding of set up.*
