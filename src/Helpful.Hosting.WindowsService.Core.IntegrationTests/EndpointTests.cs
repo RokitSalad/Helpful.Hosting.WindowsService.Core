@@ -20,6 +20,9 @@ namespace Helpful.Hosting.WindowsService.Core.IntegrationTests
                 .AddJsonFile("appSettings.json", optional: false, reloadOnChange: true)
                 .Build();
             _httpClient = new HttpClient();
+
+            ServicePointManager.ServerCertificateValidationCallback +=
+                (sender, cert, chain, sslPolicyErrors) => true;
         }
 
         [OneTimeTearDown]
