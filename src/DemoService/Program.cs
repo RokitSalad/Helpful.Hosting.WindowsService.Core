@@ -17,7 +17,7 @@ namespace DemoService
                     AllowInvalidCert = true,
                     Port = 8051,
                     SslCertStoreName = StoreName.My,
-                    SslCertSubject = "CN=localhost", //"ec2-3-104-124-78.ap-southeast-2.compute.amazonaws.com",
+                    SslCertSubject = "CN=ec2-3-104-124-78.ap-southeast-2.compute.amazonaws.com",
                     UseSsl = true
                 });
             var exit = runner.RunWebService(LogEventLevel.Debug);
