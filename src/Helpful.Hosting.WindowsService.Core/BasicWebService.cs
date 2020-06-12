@@ -58,7 +58,7 @@ namespace Helpful.Hosting.WindowsService.Core
                             if (string.IsNullOrWhiteSpace(info.IpAddress))
                             {
                                 logger.LogDebugWithContext("Ip address not present.");
-                                if (info.UseSsl)
+                                if (info.UseTls)
                                 {
                                     logger.LogDebugWithContext($"Using ssl: {info.Port}");
                                     opt.ListenAnyIP(info.Port, ConfigureKestrelForSsl(logger, info));
