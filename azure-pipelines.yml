@@ -28,10 +28,18 @@ stages:
     steps:
 
       - task: DotNetCoreCLI@2
-        displayName: 'build and pack'
+        displayName: 'dotnet build'
+        inputs:
+          command: 'build'
+          arguments: '-c $(buildConfiguration) /p:Version=$(buildNumber)'
+          projects: '**/Helpful.Hosting.WindowsService.Core.csproj'
+
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet pack'
         inputs:
           command: 'pack'
-          arguments: '-c $(buildConfiguration) /p:Version=$(buildNumber)'
+          arguments: '-c $(buildConfiguration)'
+          nobuild: true
           packagesToPack: '**/Helpful.Hosting.WindowsService.Core.csproj'
           versioningScheme: 'byBuildNumber'
           verbosityPack: 'Diagnostic'
