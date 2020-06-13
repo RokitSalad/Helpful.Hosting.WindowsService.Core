@@ -36,12 +36,14 @@ stages:
         displayName: 'dotnet build'
         inputs:
           command: 'build'
+          arguments: '--configuration $(buildConfiguration) --no-restore /p:Version=$(Build.BuildNumber)'
           projects: '**/Helpful.Hosting.WindowsService.Core.csproj'
 
       - task: DotNetCoreCLI@2
         displayName: 'dotnet pack'
         inputs:
           command: 'pack'
+          arguments: '--configuration $(buildConfiguration) --no-build'
           packagesToPack: '**/Helpful.Hosting.WindowsService.Core.csproj'
           versioningScheme: 'byBuildNumber'
           verbosityPack: 'Diagnostic'
@@ -64,12 +66,13 @@ stages:
       displayName: 'dotnet build'
       inputs:
         command: 'build'
+        arguments: '--configuration $(buildConfiguration) --no-restore'
         projects: '**/DemoService.csproj'
 
     - task: DotNetCoreCLI@2
       inputs:
         command: 'publish'
-        arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/DemoService/'
+        arguments: '--configuration $(buildConfiguration) --no-build --output $(Build.ArtifactStagingDirectory)/DemoService/'
         publishWebProjects: false
         projects: '**/DemoService.csproj'
         zipAfterPublish: True
@@ -92,12 +95,13 @@ stages:
       displayName: 'dotnet build'
       inputs:
         command: 'build'
+        arguments: '--configuration $(buildConfiguration) --no-restore'
         projects: '**/DemoServiceBackgroundProcess.csproj'
   
     - task: DotNetCoreCLI@2
       inputs:
         command: 'publish'
-        arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/DemoServiceBackgroundProcess/'
+        arguments: '--configuration $(buildConfiguration) --no-build --output $(Build.ArtifactStagingDirectory)/DemoServiceBackgroundProcess/'
         publishWebProjects: false
         projects: '**/DemoServiceBackgroundProcess.csproj'
         zipAfterPublish: True
@@ -120,12 +124,13 @@ stages:
       displayName: 'dotnet build'
       inputs:
         command: 'build'
+        arguments: '--configuration $(buildConfiguration) --no-restore'
         projects: '**/DemoServiceQuickStartApi.csproj'
   
     - task: DotNetCoreCLI@2
       inputs:
         command: 'publish'
-        arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/DemoServiceQuickStartApi/'
+        arguments: '--configuration $(buildConfiguration) --no-build --output $(Build.ArtifactStagingDirectory)/DemoServiceQuickStartApi/'
         publishWebProjects: false
         projects: '**/DemoServiceQuickStartApi.csproj'
         zipAfterPublish: True
@@ -269,6 +274,7 @@ stages:
         displayName: 'dotnet build - integration tests'
         inputs:
           command: 'build'
+          arguments: '--configuration $(buildConfiguration) --no-restore'
           projects: '**/*IntegrationTest*.csproj'
 
       - task: VSTest@2
