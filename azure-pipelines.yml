@@ -29,7 +29,7 @@ stages:
         displayName: 'dotnet build'
         inputs:
           command: 'build'
-          arguments: '-c $(buildConfiguration) /p:Version=$(Build.BuildNumber)'
+          arguments: '-c $(buildConfiguration) /p:Version=$(Build.BuildNumber) /p:AssemblyVersion=$(Build.BuildNumber)'
           projects: '**/Helpful.Hosting.WindowsService.Core.csproj'
 
       - task: DotNetCoreCLI@2
