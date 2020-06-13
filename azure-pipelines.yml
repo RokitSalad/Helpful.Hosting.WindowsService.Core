@@ -22,28 +22,14 @@ stages:
   displayName: Build and Package
   jobs:
 
-  - job: build
+  - job: Build
     steps:
 
       - task: DotNetCoreCLI@2
-        displayName: 'dotnet restore'
-        inputs:
-          command: 'restore'
-          feedsToUse: 'select'
-          projects: '**/Helpful.Hosting.WindowsService.Core.csproj'
-
-      - task: DotNetCoreCLI@2
-        displayName: 'dotnet build'
-        inputs:
-          command: 'build'
-          arguments: '--configuration $(buildConfiguration) --no-restore /p:Version=$(Build.BuildNumber)'
-          projects: '**/Helpful.Hosting.WindowsService.Core.csproj'
-
-      - task: DotNetCoreCLI@2
-        displayName: 'dotnet pack'
+        displayName: 'build and pack'
         inputs:
           command: 'pack'
-          arguments: '--configuration $(buildConfiguration) --no-build'
+          arguments: '--configuration $(buildConfiguration) /p:Version=$(Build.BuildNumber)'
           packagesToPack: '**/Helpful.Hosting.WindowsService.Core.csproj'
           versioningScheme: 'byBuildNumber'
           verbosityPack: 'Diagnostic'
