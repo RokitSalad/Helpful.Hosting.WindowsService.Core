@@ -16,7 +16,7 @@ variables:
   - name: buildConfiguration
     value: "Release"
   - name: buildNumber
-    value: 1.0.$(Rev:r)
+    value: '1.0.$(Rev:r)'
 
 stages:
 
