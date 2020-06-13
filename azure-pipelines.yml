@@ -15,8 +15,6 @@ variables:
   - group: helpful-libraries-secrets
   - name: buildConfiguration
     value: "Release"
-  - name: buildNumber
-    value: '1.0.$(Rev:r)'
 
 stages:
 
@@ -31,7 +29,7 @@ stages:
         displayName: 'dotnet build'
         inputs:
           command: 'build'
-          arguments: '-c $(buildConfiguration) /p:Version=$(buildNumber)'
+          arguments: '-c $(buildConfiguration) /p:Version=$(Build.BuildNumber)'
           projects: '**/Helpful.Hosting.WindowsService.Core.csproj'
 
       - task: DotNetCoreCLI@2
