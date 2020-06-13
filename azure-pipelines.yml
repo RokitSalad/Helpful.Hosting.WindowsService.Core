@@ -15,6 +15,8 @@ variables:
   - group: helpful-libraries-secrets
   - name: buildConfiguration
     value: "Release"
+  - name: buildNumber
+    value: 1.0.$(Rev:r)
 
 stages:
 
@@ -29,7 +31,7 @@ stages:
         displayName: 'build and pack'
         inputs:
           command: 'pack'
-          arguments: '--configuration $(buildConfiguration) /p:Version=$(Build.BuildNumber)'
+          arguments: '-c $(buildConfiguration) /p:Version=$(buildNumber)'
           packagesToPack: '**/Helpful.Hosting.WindowsService.Core.csproj'
           versioningScheme: 'byBuildNumber'
           verbosityPack: 'Diagnostic'
