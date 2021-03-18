@@ -1,0 +1,10 @@
+﻿{
+  "profiles": {
+    "Helpful.Hosting.WindowsService.Core.Worker": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

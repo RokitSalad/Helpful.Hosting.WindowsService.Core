@@ -1,0 +1,11 @@
+{"@t":"2021-03-18T03:40:46.6014155Z","@mt":"Standard setup configured for application: {ApplicationName}.","ApplicationName":"DemoService, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null","CONTEXT":{"SOURCE":"DemoService, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"}}
+{"@t":"2021-03-18T03:40:47.7818078Z","@mt":"Starting to set up basic service configuration","CONTEXT":{"SOURCE":"System.RuntimeType"}}
+{"@t":"2021-03-18T03:40:47.7823102Z","@mt":"Entry assembly identified as {EntryAssembly}.","EntryAssembly":"DemoService, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null","CONTEXT":{"SOURCE":"System.RuntimeType"}}
+{"@t":"2021-03-18T03:40:47.7824349Z","@mt":"Executing assembly identified as {ExecutingAssembly}.","ExecutingAssembly":"Helpful.Hosting.WindowsService.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null","CONTEXT":{"SOURCE":"System.RuntimeType"}}
+{"@t":"2021-03-18T03:40:47.9124487Z","@mt":"Controllers added from executing assembly and entry assembly.","CONTEXT":{"SOURCE":"System.RuntimeType"}}
+{"@t":"2021-03-18T03:40:47.9286705Z","@mt":"Swagger doc generated.","CONTEXT":{"SOURCE":"System.RuntimeType"}}
+{"@t":"2021-03-18T03:40:48.0116599Z","@mt":"Ip address not present.","@l":"Debug","CONTEXT":{"SOURCE":"System.RuntimeType"}}
+{"@t":"2021-03-18T03:40:48.0134510Z","@mt":"Not using ssl: 8050","@l":"Debug","CONTEXT":{"SOURCE":"System.RuntimeType"}}
+{"@t":"2021-03-18T03:40:48.0155740Z","@mt":"Ip address not present.","@l":"Debug","CONTEXT":{"SOURCE":"System.RuntimeType"}}
+{"@t":"2021-03-18T03:40:48.0157634Z","@mt":"Using ssl: 8051","@l":"Debug","CONTEXT":{"SOURCE":"System.RuntimeType"}}
+{"@t":"2021-03-18T03:40:48.0271074Z","@mt":"Configuring ssl: My, CN=ec2-3-104-124-78.ap-southeast-2.compute.amazonaws.com, True.","@l":"Debug","CONTEXT":{"SOURCE":"System.RuntimeType"}}
