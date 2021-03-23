@@ -2,20 +2,11 @@
 using System.Threading.Tasks;
 using Helpful.Hosting.WorkerService;
 
-namespace DemoWorker
+WorkerProcessRunner.Run<DefaultWorker>(args, async (cancellationToken) =>
 {
-    class Program
+    while (!cancellationToken.IsCancellationRequested)
     {
-        static void Main(string[] args)
-        {
-            WorkerProcessRunner.Run<DefaultWorker>(args, async (cancellationToken) =>
-            {
-                while (!cancellationToken.IsCancellationRequested)
-                {
-                    Console.WriteLine(DateTime.Now);
-                    await Task.Delay(4000);
-                }
-            });
-        }
+        Console.WriteLine(DateTime.Now);
+        await Task.Delay(4000);
     }
-}
+});
