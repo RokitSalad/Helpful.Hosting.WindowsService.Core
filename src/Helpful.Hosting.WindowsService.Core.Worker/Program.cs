@@ -11,7 +11,7 @@ namespace Helpful.Hosting.WindowsService.Core.Worker
     {
         public static void Main(string[] args)
         {
-            HostBuilderFactory.CreateHostBuilder<Worker>(args).Build().Run();
+            HostBuilderFactory.CreateHostBuilder<DefaultWorker>(args).Build().Run();
         }
     }
 }

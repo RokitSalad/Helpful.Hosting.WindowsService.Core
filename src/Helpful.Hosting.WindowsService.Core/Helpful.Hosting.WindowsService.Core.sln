@@ -17,7 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DemoServiceQuickStartApi", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DemoServiceBackgroundProcess", "..\DemoServiceBackgroundProcess\DemoServiceBackgroundProcess.csproj", "{B3BC762C-7362-42DE-9C7F-28D0BFC3BB03}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpful.Hosting.WindowsService.Core.IntegrationTests", "..\Helpful.Hosting.WindowsService.Core.IntegrationTests\Helpful.Hosting.WindowsService.Core.IntegrationTests.csproj", "{704996B3-5856-4598-BBB6-3F1BD4CD976F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helpful.Hosting.WindowsService.Core.IntegrationTests", "..\Helpful.Hosting.WindowsService.Core.IntegrationTests\Helpful.Hosting.WindowsService.Core.IntegrationTests.csproj", "{704996B3-5856-4598-BBB6-3F1BD4CD976F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helpful.Hosting.WindowsService.Core.Worker", "..\Helpful.Hosting.WindowsService.Core.Worker\Helpful.Hosting.WindowsService.Core.Worker.csproj", "{6FC1D1ED-88A6-4C42-9322-B63A45561684}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{704996B3-5856-4598-BBB6-3F1BD4CD976F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{704996B3-5856-4598-BBB6-3F1BD4CD976F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{704996B3-5856-4598-BBB6-3F1BD4CD976F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FC1D1ED-88A6-4C42-9322-B63A45561684}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FC1D1ED-88A6-4C42-9322-B63A45561684}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FC1D1ED-88A6-4C42-9322-B63A45561684}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FC1D1ED-88A6-4C42-9322-B63A45561684}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

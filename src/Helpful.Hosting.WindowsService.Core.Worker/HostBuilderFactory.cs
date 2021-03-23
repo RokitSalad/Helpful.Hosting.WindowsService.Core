@@ -4,8 +4,9 @@ using Microsoft.Extensions.Hosting;
 namespace Helpful.Hosting.WindowsService.Core.Worker
 {
     public static class HostBuilderFactory 
+
     {
-        public static IHostBuilder CreateHostBuilder<TWorker>(string[] args) where TWorker : BackgroundService =>
+        public static IHostBuilder CreateHostBuilder<TWorker>(string[] args) where TWorker : class, IHostedService =>
             Host.CreateDefaultBuilder(args)
                 .UseWindowsService()
                 .ConfigureServices((hostContext, services) =>
