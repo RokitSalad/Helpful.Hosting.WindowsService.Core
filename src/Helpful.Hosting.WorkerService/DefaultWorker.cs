@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 
-namespace Helpful.Hosting.WindowsService.Core.Worker
+namespace Helpful.Hosting.WorkerService
 {
     public class DefaultWorker : BackgroundService
     {
