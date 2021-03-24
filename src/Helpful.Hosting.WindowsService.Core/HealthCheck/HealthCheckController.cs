@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
-using System.Threading.Tasks;
+using Helpful.Hosting.Dto;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Helpful.Hosting.WindowsService.Core.HealthCheck

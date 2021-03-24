@@ -1,4 +1,4 @@
-﻿namespace Helpful.Hosting.WindowsService.Core.HealthCheck
+﻿namespace Helpful.Hosting.Dto
 {
     public class HealthcheckResponse
     {

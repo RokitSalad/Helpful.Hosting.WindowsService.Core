@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Timers;
+using Helpful.Hosting.Dto;
 using Topshelf;
 
 namespace Helpful.Hosting.WindowsService.Core
