@@ -18,17 +18,24 @@ namespace Helpful.Hosting.WorkerService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _webHost = WorkerProcessRunner.BuildKestrelWebHost<DefaultWebStartup>(new ListenerInfo
+            try
             {
-                Port = 8053
-            });
-            await _webHost.StartAsync(stoppingToken);
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                await _workerProcess(stoppingToken);
-            }
+                _webHost = WorkerProcessRunner.BuildKestrelWebHost<DefaultWebStartup>(new ListenerInfo
+                {
+                    Port = 8053
+                });
+                await _webHost.StartAsync(stoppingToken);
+                while (!stoppingToken.IsCancellationRequested)
+                {
+                    await _workerProcess(stoppingToken);
+                }
 
-            await _webHost.StopAsync(stoppingToken);
+                await _webHost.StopAsync(stoppingToken);
+            }
+            finally
+            {
+                _webHost?.Dispose();
+            }
         }
     }
 }

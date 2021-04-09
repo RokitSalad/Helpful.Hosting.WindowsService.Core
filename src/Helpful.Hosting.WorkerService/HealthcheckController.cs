@@ -3,7 +3,7 @@ using System.Reflection;
 using Helpful.Hosting.Dto;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Helpful.Hosting.WindowsService.Core.HealthCheck
+namespace Helpful.Hosting.WorkerService
 {
     [ApiController]
     [Route("[controller]")]

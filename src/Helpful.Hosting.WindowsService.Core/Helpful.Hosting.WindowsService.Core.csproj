@@ -25,6 +25,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Helpful.Hosting.Dto\Helpful.Hosting.Dto.csproj" />
+    <ProjectReference Include="..\Helpful.Hosting.Healthcheck\Helpful.Hosting.Healthcheck.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="HealthCheck\" />
   </ItemGroup>
 
 </Project>
