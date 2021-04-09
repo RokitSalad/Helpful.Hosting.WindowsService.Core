@@ -9,21 +9,20 @@ namespace Helpful.Hosting.WorkerService
     public class DefaultWorker : BackgroundService
     {
         private readonly Func<CancellationToken, Task> _workerProcess;
+        private readonly ListenerInfo[] _listenerInfo;
         private IHost _webHost;
 
-        public DefaultWorker(Func<CancellationToken, Task> workerProcess)
+        public DefaultWorker(Func<CancellationToken, Task> workerProcess, params ListenerInfo[] listenerInfo)
         {
             _workerProcess = workerProcess;
+            _listenerInfo = listenerInfo;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             try
             {
-                _webHost = WorkerProcessRunner.BuildKestrelWebHost<DefaultWebStartup>(new ListenerInfo
-                {
-                    Port = 8053
-                });
+                _webHost = WorkerProcessRunner.BuildKestrelWebHost<DefaultWebStartup>(_listenerInfo);
                 await _webHost.StartAsync(stoppingToken);
                 while (!stoppingToken.IsCancellationRequested)
                 {
