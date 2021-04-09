@@ -29,6 +29,46 @@ namespace Helpful.Hosting.WorkerService
                 .Build().Run();
         }
 
+        public static void Run(string[] args, Func<CancellationToken, Task> workerProcess, LogEventLevel logLevel, params ListenerInfo[] listenerInfo)
+        {
+            ConfigureLogger.StandardSetup(logLevel: logLevel);
+            Host.CreateDefaultBuilder(args)
+                .UseWindowsService()
+                .ConfigureServices((hostContext, services) =>
+                {
+                    services.AddSingleton(provider => workerProcess);
+                    services.AddSingleton(provider => listenerInfo);
+                    services.AddHostedService<DefaultWorker>();
+                })
+                .Build().Run();
+        }
+
+        public static void RunWithoutWeb(string[] args, Func<CancellationToken, Task> workerProcess, LogEventLevel logLevel) 
+        {
+            ConfigureLogger.StandardSetup(logLevel: logLevel);
+            Host.CreateDefaultBuilder(args)
+                .UseWindowsService()
+                .ConfigureServices((hostContext, services) =>
+                {
+                    services.AddSingleton(provider => workerProcess);
+                    services.AddHostedService<DefaultWorkerWithoutWeb>();
+                })
+                .Build().Run();
+        }
+
+        public static void RunWithoutWeb<TWorker>(string[] args, Func<CancellationToken, Task> workerProcess, LogEventLevel logLevel) where TWorker : class, IHostedService
+        {
+            ConfigureLogger.StandardSetup(logLevel: logLevel);
+            Host.CreateDefaultBuilder(args)
+                .UseWindowsService()
+                .ConfigureServices((hostContext, services) =>
+                {
+                    services.AddSingleton(provider => workerProcess);
+                    services.AddHostedService<TWorker>();
+                })
+                .Build().Run();
+        }
+
         public static IHost BuildKestrelWebHost<TWebStartup>(params ListenerInfo[] listenerInfo) where TWebStartup : class =>
             Host.CreateDefaultBuilder()
                 .ConfigureWebHostDefaults(webBuilder =>
@@ -57,25 +97,25 @@ namespace Helpful.Hosting.WorkerService
                     webBuilder.UseStartup<TWebStartup>();
                 }).Build();
 
-            private static Action<ListenOptions> ConfigureKestrelForSsl(ListenerInfo info)
+        private static Action<ListenOptions> ConfigureKestrelForSsl(ListenerInfo info)
+        {
+            return options =>
             {
-                return options =>
-                {
-                    X509Store store = new X509Store(info.SslCertStoreName,
-                        StoreLocation.LocalMachine);
-                    store.Open(OpenFlags.ReadOnly);
+                X509Store store = new X509Store(info.SslCertStoreName,
+                    StoreLocation.LocalMachine);
+                store.Open(OpenFlags.ReadOnly);
 
-                    foreach (var cert in store.Certificates)
+                foreach (var cert in store.Certificates)
+                {
+                    if (string.Equals(cert.Subject, info.SslCertSubject,
+                        StringComparison.InvariantCultureIgnoreCase))
                     {
-                        if (string.Equals(cert.Subject, info.SslCertSubject,
-                            StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            options.UseHttps(cert);
-                            break;
-                        }
+                        options.UseHttps(cert);
+                        break;
                     }
-                };
-            }
+                }
+            };
+        }
         
     }
 }
