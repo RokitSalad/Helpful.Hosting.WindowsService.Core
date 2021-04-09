@@ -4,16 +4,20 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using Helpful.Hosting.Dto;
+using Helpful.Logging.Standard;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog.Events;
 
 namespace Helpful.Hosting.WorkerService
 {
     public static class WorkerProcessRunner
     {
-        public static void Run<TWorker>(string[] args, Func<CancellationToken, Task> workerProcess, params ListenerInfo[] listenerInfo) where TWorker : class, IHostedService =>
+        public static void Run<TWorker>(string[] args, Func<CancellationToken, Task> workerProcess, LogEventLevel logLevel, params ListenerInfo[] listenerInfo) where TWorker : class, IHostedService
+        {
+            ConfigureLogger.StandardSetup(logLevel: logLevel);
             Host.CreateDefaultBuilder(args)
                 .UseWindowsService()
                 .ConfigureServices((hostContext, services) =>
@@ -23,6 +27,7 @@ namespace Helpful.Hosting.WorkerService
                     services.AddHostedService<TWorker>();
                 })
                 .Build().Run();
+        }
 
         public static IHost BuildKestrelWebHost<TWebStartup>(params ListenerInfo[] listenerInfo) where TWebStartup : class =>
             Host.CreateDefaultBuilder()

@@ -11,7 +11,11 @@ namespace Helpful.Hosting.WorkerService
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            var assembly = Assembly.GetEntryAssembly();
+            var executingAssembly = Assembly.GetExecutingAssembly();
+            
+            services.AddControllers().AddApplicationPart(assembly).AddApplicationPart(executingAssembly);
+            
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = ApplicationTitle, Version = "v1" }); });
         }
 
