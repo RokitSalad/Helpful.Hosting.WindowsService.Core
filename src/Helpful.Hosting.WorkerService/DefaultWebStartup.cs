@@ -8,18 +8,12 @@ namespace Helpful.Hosting.WorkerService
 {
     public class DefaultWebStartup
     {
-        private static string ApplicationTitle => Assembly.GetEntryAssembly()?.GetName().ToString();
+        private static string _productVersion;
+        private static string _applicationTitle;
 
-        private static string ApplicationMajorVersion
-        {
-            get
-            {
-                var assembly = Assembly.GetEntryAssembly();
-                if (assembly == null) return "0";
-                FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
-                return fvi.ProductVersion;
-            }
-        }
+        private static string ApplicationTitle => _applicationTitle ??= Assembly.GetEntryAssembly()?.GetName().Name;
+
+        private static string ApplicationMajorVersion => _productVersion ??= GetAssemblyVersion();
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -30,7 +24,7 @@ namespace Helpful.Hosting.WorkerService
                 .AddApplicationPart(assembly)
                 .AddApplicationPart(executingAssembly);
             
-            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = ApplicationTitle, Version = $"v{ApplicationMajorVersion}" }); });
+            services.AddSwaggerGen(c => { c.SwaggerDoc($"v{ApplicationMajorVersion}", new OpenApiInfo { Title = ApplicationTitle, Version = $"v{ApplicationMajorVersion}" }); });
         }
 
         public void Configure(IApplicationBuilder app)
@@ -41,7 +35,15 @@ namespace Helpful.Hosting.WorkerService
                 endpoints.MapControllers();
             }); 
             app.UseSwagger();
-            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", $"{ApplicationTitle} V{ApplicationMajorVersion}"); });
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint($"/swagger/v{ApplicationMajorVersion}/swagger.json", $"{ApplicationTitle} V{ApplicationMajorVersion}"); });
+        }
+
+        private static string GetAssemblyVersion()
+        {
+            var assembly = Assembly.GetEntryAssembly();
+            if (assembly == null) return "0";
+            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            return fvi.ProductVersion;
         }
     }
 }

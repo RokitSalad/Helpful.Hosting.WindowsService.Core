@@ -11,12 +11,20 @@ namespace Helpful.Hosting.WorkerService
     [Route("[controller]")]
     public class HealthcheckController : ControllerBase
     {
+        private HealthcheckResponse _healthcheckResponse;
         private ILogger Logger => this.GetLogger();
+
+        private HealthcheckResponse HealthcheckResponse => _healthcheckResponse ??= GetHealthcheckResponse();
 
         [HttpGet]
         public HealthcheckResponse Get()
         {
             Logger.LogDebugWithContext("Basic healthcheck hit");
+            return HealthcheckResponse;
+        }
+
+        private HealthcheckResponse GetHealthcheckResponse()
+        {
             var assembly = Assembly.GetEntryAssembly();
             if (assembly != null)
             {
@@ -28,12 +36,13 @@ namespace Helpful.Hosting.WorkerService
                     ServiceAssemblyName = assembly.GetName().Name,
                     AssemblyVersion = version
                 };
-                Logger.LogDebugWithContext("Returning version specific healthcheck response: {0} {1}", response.ServiceAssemblyName, response.AssemblyVersion);
+                Logger.LogDebugWithContext("Building version specific healthcheck response: {0} {1}", response.ServiceAssemblyName, response.AssemblyVersion);
                 return response;
             }
-            Logger.LogDebugWithContext("Returning empty healthcheck response");
+            Logger.LogDebugWithContext("Building empty healthcheck response");
             return new HealthcheckResponse();
         }
+
 
     }
 }
