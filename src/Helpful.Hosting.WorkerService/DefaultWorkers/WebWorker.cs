@@ -17,7 +17,7 @@ namespace Helpful.Hosting.WorkerService.DefaultWorkers
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            _webHost = WorkerProcessRunner.BuildKestrelWebHost<DefaultWebStartup>(_listenerInfo);
+            _webHost = HostFactory.BuildKestrelWebHost<DefaultWebStartup>(_listenerInfo);
             await _webHost.StartAsync(cancellationToken);
         }
 

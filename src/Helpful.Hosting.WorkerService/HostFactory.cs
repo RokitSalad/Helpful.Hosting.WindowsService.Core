@@ -14,9 +14,14 @@ using Serilog.Events;
 
 namespace Helpful.Hosting.WorkerService
 {
-    public static class WorkerProcessRunner
+    public static class HostFactory
     {
-        public static void Run<TWorker>(string[] args, Func<CancellationToken, Task> workerProcess, LogEventLevel logLevel, params ListenerInfo[] listenerInfo) where TWorker : class, IHostedService
+        public static void RunCompoundWorker(string[] args, Func<CancellationToken, Task> workerProcess, LogEventLevel logLevel, params ListenerInfo[] listenerInfo)
+        {
+            RunCompoundWorker<CompoundWorker>(args, workerProcess, logLevel, listenerInfo);
+        }
+
+        public static void RunCompoundWorker<TWorker>(string[] args, Func<CancellationToken, Task> workerProcess, LogEventLevel logLevel, params ListenerInfo[] listenerInfo) where TWorker : class, IHostedService
         {
             ConfigureLogger.StandardSetup(logLevel: logLevel);
             Host.CreateDefaultBuilder(args)
@@ -30,34 +35,12 @@ namespace Helpful.Hosting.WorkerService
                 .Build().Run();
         }
 
-        public static void Run(string[] args, Func<CancellationToken, Task> workerProcess, LogEventLevel logLevel, params ListenerInfo[] listenerInfo)
+        public static void RunBackgroundTaskWorker(string[] args, Func<CancellationToken, Task> workerProcess, LogEventLevel logLevel) 
         {
-            ConfigureLogger.StandardSetup(logLevel: logLevel);
-            Host.CreateDefaultBuilder(args)
-                .UseWindowsService()
-                .ConfigureServices((hostContext, services) =>
-                {
-                    services.AddSingleton(provider => workerProcess);
-                    services.AddSingleton(provider => listenerInfo);
-                    services.AddHostedService<CompoundWorker>();
-                })
-                .Build().Run();
+            RunBackgroundTaskWorker<BackgroundTaskWorker>(args, workerProcess, logLevel);
         }
 
-        public static void RunWithoutWeb(string[] args, Func<CancellationToken, Task> workerProcess, LogEventLevel logLevel) 
-        {
-            ConfigureLogger.StandardSetup(logLevel: logLevel);
-            Host.CreateDefaultBuilder(args)
-                .UseWindowsService()
-                .ConfigureServices((hostContext, services) =>
-                {
-                    services.AddSingleton(provider => workerProcess);
-                    services.AddHostedService<BackgroundTaskWorker>();
-                })
-                .Build().Run();
-        }
-
-        public static void RunWithoutWeb<TWorker>(string[] args, Func<CancellationToken, Task> workerProcess, LogEventLevel logLevel) where TWorker : class, IHostedService
+        public static void RunBackgroundTaskWorker<TWorker>(string[] args, Func<CancellationToken, Task> workerProcess, LogEventLevel logLevel) where TWorker : class, IHostedService
         {
             ConfigureLogger.StandardSetup(logLevel: logLevel);
             Host.CreateDefaultBuilder(args)
@@ -70,7 +53,12 @@ namespace Helpful.Hosting.WorkerService
                 .Build().Run();
         }
 
-        public static void RunApi<TWorker>(string[] args, LogEventLevel logLevel, params ListenerInfo[] listenerInfo)
+        public static void RunApiWorker(string[] args, LogEventLevel logLevel, params ListenerInfo[] listenerInfo)
+        {
+            RunApiWorker<WebWorker>(args, logLevel, listenerInfo);
+        }
+
+        public static void RunApiWorker<TWorker>(string[] args, LogEventLevel logLevel, params ListenerInfo[] listenerInfo)
             where TWorker : class, IHostedService
         {
             ConfigureLogger.StandardSetup(logLevel: logLevel);
@@ -80,19 +68,6 @@ namespace Helpful.Hosting.WorkerService
                 {
                     services.AddSingleton(provider => listenerInfo);
                     services.AddHostedService<TWorker>();
-                })
-                .Build().Run();
-        }
-
-        public static void RunApi(string[] args, LogEventLevel logLevel, params ListenerInfo[] listenerInfo)
-        {
-            ConfigureLogger.StandardSetup(logLevel: logLevel);
-            Host.CreateDefaultBuilder(args)
-                .UseWindowsService()
-                .ConfigureServices((hostContext, services) =>
-                {
-                    services.AddSingleton(provider => listenerInfo);
-                    services.AddHostedService<WebWorker>();
                 })
                 .Build().Run();
         }

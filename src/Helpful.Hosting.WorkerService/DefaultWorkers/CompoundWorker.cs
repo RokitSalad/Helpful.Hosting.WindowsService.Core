@@ -22,7 +22,7 @@ namespace Helpful.Hosting.WorkerService.DefaultWorkers
         {
             try
             {
-                _webHost = WorkerProcessRunner.BuildKestrelWebHost<DefaultWebStartup>(_listenerInfo);
+                _webHost = HostFactory.BuildKestrelWebHost<DefaultWebStartup>(_listenerInfo);
                 await _webHost.StartAsync(stoppingToken);
                 while (!stoppingToken.IsCancellationRequested)
                 {

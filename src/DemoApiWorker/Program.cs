@@ -8,7 +8,7 @@ namespace DemoApiWorker
     {
         static void Main(string[] args)
         {
-            WorkerProcessRunner.RunApi(args, LogEventLevel.Debug, new ListenerInfo
+            HostFactory.RunApiWorker(args, LogEventLevel.Debug, new ListenerInfo
                 {
                     Port = 8055
                 }

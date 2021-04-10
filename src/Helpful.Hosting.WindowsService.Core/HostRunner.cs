@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Security;
 using Helpful.Hosting.Dto;
 using Helpful.Logging.Standard;
 using Serilog.Events;

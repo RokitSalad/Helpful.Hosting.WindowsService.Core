@@ -7,7 +7,7 @@ using Serilog.Events;
 // Running the async task as a Worker Service on Windows and declaring the type of Worker class to use.
 // This is passing the CompoundWorker class, but any class which implements IHostedService will work.
 // This instance will also expose any controller actions you declare, along with a health check and Swagger endpoints.
-WorkerProcessRunner.Run(args, async (cancellationToken) =>
+HostFactory.RunCompoundWorker(args, async (cancellationToken) =>
     {
         while (!cancellationToken.IsCancellationRequested)
         {
