@@ -16,51 +16,67 @@ namespace Helpful.Hosting.WorkerService
 {
     public static class HostFactory
     {
-        public static void RunCompoundWorker(string[] args, Func<CancellationToken, Task> workerProcess, Action<HostBuilderContext, IServiceCollection> iocDelegate, LogEventLevel logLevel, params ListenerInfo[] listenerInfo)
-        {
-            RunCompoundWorker<CompoundWorker>(args, workerProcess, iocDelegate, logLevel, listenerInfo);
-        }
-
-        public static void RunCompoundWorker<TWorker>(string[] args, Func<CancellationToken, Task> workerProcess, Action<HostBuilderContext, IServiceCollection> iocDelegate, LogEventLevel logLevel, params ListenerInfo[] listenerInfo) where TWorker : class, IHostedService
+        public static void RunCustomWorker<TWorker>(string[] args, Action<HostBuilderContext, WebHostBuilderContext, IServiceCollection> iocDelegate, LogEventLevel logLevel, params ListenerInfo[] listenerInfo) where TWorker : class, IHostedService
         {
             ConfigureLogger.StandardSetup(logLevel: logLevel);
             Host.CreateDefaultBuilder(args)
                 .UseWindowsService()
                 .ConfigureServices((hostContext, services) =>
                 {
-                    iocDelegate(hostContext, services);
-                    services.AddSingleton(provider => workerProcess);
+                    iocDelegate(hostContext, null, services);
                     services.AddSingleton(provider => listenerInfo);
                     services.AddHostedService<TWorker>();
                 })
                 .Build().Run();
         }
 
-        public static void RunBackgroundTaskWorker(string[] args, Func<CancellationToken, Task> workerProcess, Action<HostBuilderContext, IServiceCollection> iocDelegate, LogEventLevel logLevel) 
+        public static void RunCompoundWorker(string[] args, Func<CancellationToken, Task> workerProcess, Action<HostBuilderContext, WebHostBuilderContext, IServiceCollection> iocDelegate, LogEventLevel logLevel, params ListenerInfo[] listenerInfo)
         {
-            RunBackgroundTaskWorker<BackgroundTaskWorker>(args, workerProcess, iocDelegate, logLevel);
+            RunCompoundWorker<CompoundWorker>(args, workerProcess, iocDelegate, logLevel, listenerInfo);
         }
 
-        public static void RunBackgroundTaskWorker<TWorker>(string[] args, Func<CancellationToken, Task> workerProcess, Action<HostBuilderContext, IServiceCollection> iocDelegate, LogEventLevel logLevel) where TWorker : class, IHostedService
+        public static void RunCompoundWorker<TWorker>(string[] args, Func<CancellationToken, Task> workerProcess, Action<HostBuilderContext, WebHostBuilderContext, IServiceCollection> iocDelegate, LogEventLevel logLevel, params ListenerInfo[] listenerInfo) where TWorker : class, IHostedService
         {
             ConfigureLogger.StandardSetup(logLevel: logLevel);
             Host.CreateDefaultBuilder(args)
                 .UseWindowsService()
                 .ConfigureServices((hostContext, services) =>
                 {
-                    iocDelegate(hostContext, services);
+                    iocDelegate(hostContext, null, services);
                     services.AddSingleton(provider => workerProcess);
+                    services.AddSingleton(provider => listenerInfo);
+                    services.AddSingleton(provider => iocDelegate);
                     services.AddHostedService<TWorker>();
                 })
                 .Build().Run();
         }
 
-        public static void RunApiWorker(string[] args, Action<HostBuilderContext, IServiceCollection> iocDelegate, LogEventLevel logLevel, params ListenerInfo[] listenerInfo)
+        public static void RunBackgroundTaskWorker(string[] args, Func<CancellationToken, Task> workerProcess, Action<HostBuilderContext, WebHostBuilderContext, IServiceCollection> iocDelegate, LogEventLevel logLevel) 
+        {
+            RunBackgroundTaskWorker<BackgroundTaskWorker>(args, workerProcess, iocDelegate, logLevel);
+        }
+
+        public static void RunBackgroundTaskWorker<TWorker>(string[] args, Func<CancellationToken, Task> workerProcess, Action<HostBuilderContext, WebHostBuilderContext, IServiceCollection> iocDelegate, LogEventLevel logLevel) where TWorker : class, IHostedService
+        {
+            ConfigureLogger.StandardSetup(logLevel: logLevel);
+            Host.CreateDefaultBuilder(args)
+                .UseWindowsService()
+                .ConfigureServices((hostContext, services) =>
+                {
+                    iocDelegate(hostContext, null, services);
+                    services.AddSingleton(provider => workerProcess);
+                    services.AddSingleton(provider => iocDelegate);
+                    services.AddHostedService<TWorker>();
+                })
+                .Build().Run();
+        }
+
+        public static void RunApiWorker(string[] args, Action<HostBuilderContext, WebHostBuilderContext, IServiceCollection> iocDelegate, LogEventLevel logLevel, params ListenerInfo[] listenerInfo)
         {
             RunApiWorker<WebWorker>(args, iocDelegate, logLevel, listenerInfo);
         }
 
-        public static void RunApiWorker<TWorker>(string[] args, Action<HostBuilderContext, IServiceCollection> iocDelegate, LogEventLevel logLevel, params ListenerInfo[] listenerInfo)
+        public static void RunApiWorker<TWorker>(string[] args, Action<HostBuilderContext, WebHostBuilderContext, IServiceCollection> iocDelegate, LogEventLevel logLevel, params ListenerInfo[] listenerInfo)
             where TWorker : class, IHostedService
         {
             ConfigureLogger.StandardSetup(logLevel: logLevel);
@@ -68,14 +84,15 @@ namespace Helpful.Hosting.WorkerService
                 .UseWindowsService()
                 .ConfigureServices((hostContext, services) =>
                 {
-                    iocDelegate(hostContext, services);
+                    iocDelegate(hostContext, null, services);
                     services.AddSingleton(provider => listenerInfo);
+                    services.AddSingleton(provider => iocDelegate);
                     services.AddHostedService<TWorker>();
                 })
                 .Build().Run();
         }
 
-        public static IHost BuildKestrelWebHost<TWebStartup>(params ListenerInfo[] listenerInfo) where TWebStartup : class =>
+        public static IHost BuildKestrelWebHost<TWebStartup>(Action<HostBuilderContext, WebHostBuilderContext, IServiceCollection> iocDelegate, params ListenerInfo[] listenerInfo) where TWebStartup : class =>
             Host.CreateDefaultBuilder()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
@@ -99,6 +116,10 @@ namespace Helpful.Hosting.WorkerService
                                 opt.Listen(IPAddress.Parse(info.IpAddress), info.Port);
                             }
                         }
+                    });
+                    webBuilder.ConfigureServices((hostContext, services) =>
+                    {
+                        iocDelegate(null, hostContext, services);
                     });
                     webBuilder.UseStartup<TWebStartup>();
                 }).Build();

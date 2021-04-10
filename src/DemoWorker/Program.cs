@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
+using DemoWorker;
+using DemoWorker.Services;
 using Helpful.Hosting.Dto;
 using Helpful.Hosting.WorkerService;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog.Events;
 
 // Running the async task as a Worker Service on Windows and declaring the type of Worker class to use.
@@ -14,7 +17,10 @@ HostFactory.RunCompoundWorker(args, async (cancellationToken) =>
             Console.WriteLine(DateTime.Now);
             await Task.Delay(4000);
         }
-    }, (context, collection) => { }, LogEventLevel.Debug, new ListenerInfo
+    }, (hostContext, webHostContext, collection) =>
+    {
+        collection.AddScoped<IDayOfTheWeekService, DayOfTheWeekService>();
+    }, LogEventLevel.Debug, new ListenerInfo
         {
             Port = 8053
         }

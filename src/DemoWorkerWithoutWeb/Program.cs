@@ -13,5 +13,5 @@ HostFactory.RunBackgroundTaskWorker(args, async (cancellationToken) =>
             Console.WriteLine(DateTime.Now);
             await Task.Delay(4000);
         }
-    }, (context, collection) => { }, LogEventLevel.Debug
+    }, (hostContext, webHostContext, collection) => { }, LogEventLevel.Debug
 );

@@ -1,4 +1,4 @@
-﻿using System;
+﻿using DemoWorker.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DemoWorker
@@ -7,10 +7,17 @@ namespace DemoWorker
     [Route("[controller]")]
     public class DayOfTheWeekController : ControllerBase
     {
+        private readonly IDayOfTheWeekService _dayOfTheWeekService;
+
+        public DayOfTheWeekController(IDayOfTheWeekService dayOfTheWeekService)
+        {
+            _dayOfTheWeekService = dayOfTheWeekService;
+        }
+
         [HttpGet]
         public string Get()
         {
-            return DateTime.Now.DayOfWeek.ToString();
+            return _dayOfTheWeekService.GetDayOfTheWeek();
         }
     }
 }
