@@ -4,15 +4,15 @@ using System.Threading.Tasks;
 using Helpful.Hosting.Dto;
 using Microsoft.Extensions.Hosting;
 
-namespace Helpful.Hosting.WorkerService
+namespace Helpful.Hosting.WorkerService.DefaultWorkers
 {
-    public class DefaultWorker : BackgroundService
+    public class CompoundWorker : BackgroundService
     {
         private readonly Func<CancellationToken, Task> _workerProcess;
         private readonly ListenerInfo[] _listenerInfo;
         private IHost _webHost;
 
-        public DefaultWorker(Func<CancellationToken, Task> workerProcess, params ListenerInfo[] listenerInfo)
+        public CompoundWorker(Func<CancellationToken, Task> workerProcess, params ListenerInfo[] listenerInfo)
         {
             _workerProcess = workerProcess;
             _listenerInfo = listenerInfo;

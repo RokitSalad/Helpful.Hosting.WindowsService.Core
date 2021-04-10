@@ -3,13 +3,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 
-namespace Helpful.Hosting.WorkerService
+namespace Helpful.Hosting.WorkerService.DefaultWorkers
 {
-    public class DefaultWorkerWithoutWeb : BackgroundService
+    public class BackgroundTaskWorker : BackgroundService
     {
         private readonly Func<CancellationToken, Task> _workerProcess;
 
-        public DefaultWorkerWithoutWeb(Func<CancellationToken, Task> workerProcess)
+        public BackgroundTaskWorker(Func<CancellationToken, Task> workerProcess)
         {
             _workerProcess = workerProcess;
         }

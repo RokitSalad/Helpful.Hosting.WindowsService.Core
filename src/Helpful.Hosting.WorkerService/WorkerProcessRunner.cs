@@ -4,6 +4,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using Helpful.Hosting.Dto;
+using Helpful.Hosting.WorkerService.DefaultWorkers;
 using Helpful.Logging.Standard;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -38,7 +39,7 @@ namespace Helpful.Hosting.WorkerService
                 {
                     services.AddSingleton(provider => workerProcess);
                     services.AddSingleton(provider => listenerInfo);
-                    services.AddHostedService<DefaultWorker>();
+                    services.AddHostedService<CompoundWorker>();
                 })
                 .Build().Run();
         }
@@ -51,7 +52,7 @@ namespace Helpful.Hosting.WorkerService
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddSingleton(provider => workerProcess);
-                    services.AddHostedService<DefaultWorkerWithoutWeb>();
+                    services.AddHostedService<BackgroundTaskWorker>();
                 })
                 .Build().Run();
         }
@@ -65,6 +66,33 @@ namespace Helpful.Hosting.WorkerService
                 {
                     services.AddSingleton(provider => workerProcess);
                     services.AddHostedService<TWorker>();
+                })
+                .Build().Run();
+        }
+
+        public static void RunApi<TWorker>(string[] args, LogEventLevel logLevel, params ListenerInfo[] listenerInfo)
+            where TWorker : class, IHostedService
+        {
+            ConfigureLogger.StandardSetup(logLevel: logLevel);
+            Host.CreateDefaultBuilder(args)
+                .UseWindowsService()
+                .ConfigureServices((hostContext, services) =>
+                {
+                    services.AddSingleton(provider => listenerInfo);
+                    services.AddHostedService<TWorker>();
+                })
+                .Build().Run();
+        }
+
+        public static void RunApi(string[] args, LogEventLevel logLevel, params ListenerInfo[] listenerInfo)
+        {
+            ConfigureLogger.StandardSetup(logLevel: logLevel);
+            Host.CreateDefaultBuilder(args)
+                .UseWindowsService()
+                .ConfigureServices((hostContext, services) =>
+                {
+                    services.AddSingleton(provider => listenerInfo);
+                    services.AddHostedService<WebWorker>();
                 })
                 .Build().Run();
         }
