@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Helpful.Hosting.Dto;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -17,6 +18,7 @@ namespace Helpful.Hosting.WorkerService.DefaultWorkers
     /// </summary>
     public class CompoundWorker : BackgroundService
     {
+        private readonly Action<IApplicationBuilder> _webAppBuilderDelegate;
         private readonly Func<CancellationToken, Task> _workerProcess;
         private readonly Action<HostBuilderContext, WebHostBuilderContext, IServiceCollection> _iocDelegate;
         private readonly ListenerInfo[] _listenerInfo;
@@ -25,13 +27,16 @@ namespace Helpful.Hosting.WorkerService.DefaultWorkers
         /// <summary>
         /// Constructor. All constructor params are passed into <code>HostFactory.RunCompoundWorker()</code>.
         /// </summary>
+        /// <param name="webAppBuilderDelegate">A delegate to allow custom actions on the web app builder</param>
         /// <param name="workerProcess">The async process to run until the task is cancelled</param>
         /// <param name="iocDelegate">A delegate for setting IOC bindings</param>
         /// <param name="listenerInfo">A collection of endpoints which determine how the web host listens for requests</param>
-        public CompoundWorker(Func<CancellationToken, Task> workerProcess, 
+        public CompoundWorker(Action<IApplicationBuilder> webAppBuilderDelegate, 
+            Func<CancellationToken, Task> workerProcess, 
             Action<HostBuilderContext, WebHostBuilderContext, IServiceCollection> iocDelegate, 
             params ListenerInfo[] listenerInfo)
         {
+            _webAppBuilderDelegate = webAppBuilderDelegate;
             _workerProcess = workerProcess;
             _iocDelegate = iocDelegate;
             _listenerInfo = listenerInfo;
@@ -41,7 +46,7 @@ namespace Helpful.Hosting.WorkerService.DefaultWorkers
         {
             try
             {
-                _webHost = HostFactory.BuildKestrelWebHost<DefaultWebStartup>(_iocDelegate, _listenerInfo);
+                _webHost = HostFactory.BuildKestrelWebHost<DefaultWebStartup>(_webAppBuilderDelegate, _iocDelegate, _listenerInfo);
                 await _webHost.StartAsync(stoppingToken);
                 while (!stoppingToken.IsCancellationRequested)
                 {

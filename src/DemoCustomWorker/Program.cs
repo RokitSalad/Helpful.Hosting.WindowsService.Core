@@ -11,7 +11,7 @@ HostFactory.RunCompoundWorker(args, async (cancellationToken) =>
             Console.WriteLine(DateTime.Now);
             await Task.Delay(4000);
         }
-    }, (hostContext, webHostContext, collection) => { }, LogEventLevel.Debug, new ListenerInfo
+    }, (hostContext, webHostContext, collection) => { }, app => { }, LogEventLevel.Debug, new ListenerInfo
     {
         Port = 8053
     }

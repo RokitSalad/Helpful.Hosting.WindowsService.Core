@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using DemoWorkerAdvanced.Services;
 using Helpful.Hosting.Dto;
 using Helpful.Hosting.WorkerService.DefaultWorkers;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -17,10 +18,10 @@ namespace DemoWorkerAdvanced
     {
         private readonly IDayOfTheWeekService _dayOfTheWeekService;
 
-        public CustomWorker(IDayOfTheWeekService dayOfTheWeekService, 
+        public CustomWorker(IDayOfTheWeekService dayOfTheWeekService, Action<IApplicationBuilder> webAppBuilderDelegate,
             Action<HostBuilderContext, WebHostBuilderContext, IServiceCollection> iocDelegate, 
             params ListenerInfo[] listenerInfo)
-        : base(iocDelegate, listenerInfo)
+        : base(webAppBuilderDelegate, iocDelegate, listenerInfo)
         {
             _dayOfTheWeekService = dayOfTheWeekService;
         }

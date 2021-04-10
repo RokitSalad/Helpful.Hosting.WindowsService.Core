@@ -8,7 +8,8 @@ namespace DemoApiWorker
     {
         static void Main(string[] args)
         {
-            HostFactory.RunApiWorker(args, (hostContext, webHostContext, collection) => { }, LogEventLevel.Debug, new ListenerInfo
+            HostFactory.RunApiWorker(args, (hostContext, webHostContext, collection) => { },
+                app => { }, LogEventLevel.Debug, new ListenerInfo
                 {
                     Port = 8055
                 }

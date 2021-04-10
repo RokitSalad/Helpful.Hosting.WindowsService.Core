@@ -20,7 +20,7 @@ HostFactory.RunCompoundWorker(args, async (cancellationToken) =>
     }, (hostContext, webHostContext, collection) =>
     {
         collection.AddScoped<IDayOfTheWeekService, DayOfTheWeekService>();
-    }, LogEventLevel.Debug, new ListenerInfo
+    }, app => {}, LogEventLevel.Debug, new ListenerInfo
         {
             Port = 8053
         }

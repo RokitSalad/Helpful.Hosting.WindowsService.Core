@@ -8,7 +8,7 @@ using Serilog.Events;
 HostFactory.RunCustomWorker<CustomWorker>(args, (hostContext, webHostContext, collection) =>
     {
         collection.AddScoped<IDayOfTheWeekService, DayOfTheWeekService>();
-    }, LogEventLevel.Debug, new ListenerInfo
+    }, app => { }, LogEventLevel.Debug, new ListenerInfo
     {
         Port = 8053
     }

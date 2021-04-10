@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,14 +21,16 @@ namespace Helpful.Hosting.WorkerService
             var assembly = Assembly.GetEntryAssembly();
             var executingAssembly = Assembly.GetExecutingAssembly();
             
-            services.AddControllers()
+            services.AddSwaggerGen(c =>
+                {
+                    c.SwaggerDoc($"v{ApplicationMajorVersion}", new OpenApiInfo { Title = ApplicationTitle, Version = $"v{ApplicationMajorVersion}" });
+                })
+                .AddControllers()
                 .AddApplicationPart(assembly)
                 .AddApplicationPart(executingAssembly);
-            
-            services.AddSwaggerGen(c => { c.SwaggerDoc($"v{ApplicationMajorVersion}", new OpenApiInfo { Title = ApplicationTitle, Version = $"v{ApplicationMajorVersion}" }); });
         }
 
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, Action<IApplicationBuilder> appBuilderDelegate)
         {
             app.UseRouting();
             app.UseEndpoints(endpoints =>
@@ -36,6 +39,7 @@ namespace Helpful.Hosting.WorkerService
             }); 
             app.UseSwagger();
             app.UseSwaggerUI(c => { c.SwaggerEndpoint($"/swagger/v{ApplicationMajorVersion}/swagger.json", $"{ApplicationTitle} V{ApplicationMajorVersion}"); });
+            appBuilderDelegate(app);
         }
 
         private static string GetAssemblyVersion()
