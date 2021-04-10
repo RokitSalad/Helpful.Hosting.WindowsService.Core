@@ -16,18 +16,19 @@ namespace Helpful.Hosting.WorkerService
 {
     public static class HostFactory
     {
-        public static void RunCompoundWorker(string[] args, Func<CancellationToken, Task> workerProcess, LogEventLevel logLevel, params ListenerInfo[] listenerInfo)
+        public static void RunCompoundWorker(string[] args, Func<CancellationToken, Task> workerProcess, Action<HostBuilderContext, IServiceCollection> iocDelegate, LogEventLevel logLevel, params ListenerInfo[] listenerInfo)
         {
-            RunCompoundWorker<CompoundWorker>(args, workerProcess, logLevel, listenerInfo);
+            RunCompoundWorker<CompoundWorker>(args, workerProcess, iocDelegate, logLevel, listenerInfo);
         }
 
-        public static void RunCompoundWorker<TWorker>(string[] args, Func<CancellationToken, Task> workerProcess, LogEventLevel logLevel, params ListenerInfo[] listenerInfo) where TWorker : class, IHostedService
+        public static void RunCompoundWorker<TWorker>(string[] args, Func<CancellationToken, Task> workerProcess, Action<HostBuilderContext, IServiceCollection> iocDelegate, LogEventLevel logLevel, params ListenerInfo[] listenerInfo) where TWorker : class, IHostedService
         {
             ConfigureLogger.StandardSetup(logLevel: logLevel);
             Host.CreateDefaultBuilder(args)
                 .UseWindowsService()
                 .ConfigureServices((hostContext, services) =>
                 {
+                    iocDelegate(hostContext, services);
                     services.AddSingleton(provider => workerProcess);
                     services.AddSingleton(provider => listenerInfo);
                     services.AddHostedService<TWorker>();
@@ -35,30 +36,31 @@ namespace Helpful.Hosting.WorkerService
                 .Build().Run();
         }
 
-        public static void RunBackgroundTaskWorker(string[] args, Func<CancellationToken, Task> workerProcess, LogEventLevel logLevel) 
+        public static void RunBackgroundTaskWorker(string[] args, Func<CancellationToken, Task> workerProcess, Action<HostBuilderContext, IServiceCollection> iocDelegate, LogEventLevel logLevel) 
         {
-            RunBackgroundTaskWorker<BackgroundTaskWorker>(args, workerProcess, logLevel);
+            RunBackgroundTaskWorker<BackgroundTaskWorker>(args, workerProcess, iocDelegate, logLevel);
         }
 
-        public static void RunBackgroundTaskWorker<TWorker>(string[] args, Func<CancellationToken, Task> workerProcess, LogEventLevel logLevel) where TWorker : class, IHostedService
+        public static void RunBackgroundTaskWorker<TWorker>(string[] args, Func<CancellationToken, Task> workerProcess, Action<HostBuilderContext, IServiceCollection> iocDelegate, LogEventLevel logLevel) where TWorker : class, IHostedService
         {
             ConfigureLogger.StandardSetup(logLevel: logLevel);
             Host.CreateDefaultBuilder(args)
                 .UseWindowsService()
                 .ConfigureServices((hostContext, services) =>
                 {
+                    iocDelegate(hostContext, services);
                     services.AddSingleton(provider => workerProcess);
                     services.AddHostedService<TWorker>();
                 })
                 .Build().Run();
         }
 
-        public static void RunApiWorker(string[] args, LogEventLevel logLevel, params ListenerInfo[] listenerInfo)
+        public static void RunApiWorker(string[] args, Action<HostBuilderContext, IServiceCollection> iocDelegate, LogEventLevel logLevel, params ListenerInfo[] listenerInfo)
         {
-            RunApiWorker<WebWorker>(args, logLevel, listenerInfo);
+            RunApiWorker<WebWorker>(args, iocDelegate, logLevel, listenerInfo);
         }
 
-        public static void RunApiWorker<TWorker>(string[] args, LogEventLevel logLevel, params ListenerInfo[] listenerInfo)
+        public static void RunApiWorker<TWorker>(string[] args, Action<HostBuilderContext, IServiceCollection> iocDelegate, LogEventLevel logLevel, params ListenerInfo[] listenerInfo)
             where TWorker : class, IHostedService
         {
             ConfigureLogger.StandardSetup(logLevel: logLevel);
@@ -66,6 +68,7 @@ namespace Helpful.Hosting.WorkerService
                 .UseWindowsService()
                 .ConfigureServices((hostContext, services) =>
                 {
+                    iocDelegate(hostContext, services);
                     services.AddSingleton(provider => listenerInfo);
                     services.AddHostedService<TWorker>();
                 })

@@ -4,9 +4,6 @@ using Helpful.Hosting.Dto;
 using Helpful.Hosting.WorkerService;
 using Serilog.Events;
 
-// Running the async task as a Worker Service on Windows and declaring the type of Worker class to use.
-// This is passing the CompoundWorker class, but any class which implements IHostedService will work.
-// This instance will also expose any controller actions you declare, along with a health check and Swagger endpoints.
 HostFactory.RunCompoundWorker(args, async (cancellationToken) =>
     {
         while (!cancellationToken.IsCancellationRequested)
@@ -15,7 +12,7 @@ HostFactory.RunCompoundWorker(args, async (cancellationToken) =>
             await Task.Delay(4000);
         }
     }, (context, collection) => { }, LogEventLevel.Debug, new ListenerInfo
-        {
-            Port = 8053
-        }
+    {
+        Port = 8053
+    }
 );
