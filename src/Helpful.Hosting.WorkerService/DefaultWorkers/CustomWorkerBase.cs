@@ -8,13 +8,13 @@ using Microsoft.Extensions.Hosting;
 
 namespace Helpful.Hosting.WorkerService.DefaultWorkers
 {
-    public abstract class CustomWorkers : BackgroundService
+    public abstract class CustomWorkerBase : BackgroundService
     {
         private readonly Action<HostBuilderContext, WebHostBuilderContext, IServiceCollection> _iocDelegate;
         private readonly ListenerInfo[] _listenerInfo;
         private IHost _webHost;
 
-        protected CustomWorkers(Action<HostBuilderContext, WebHostBuilderContext, IServiceCollection> iocDelegate, params ListenerInfo[] listenerInfo)
+        protected CustomWorkerBase(Action<HostBuilderContext, WebHostBuilderContext, IServiceCollection> iocDelegate, params ListenerInfo[] listenerInfo)
         {
             _iocDelegate = iocDelegate;
             _listenerInfo = listenerInfo;
