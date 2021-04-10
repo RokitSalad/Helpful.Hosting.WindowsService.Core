@@ -8,12 +8,24 @@ using Microsoft.Extensions.Hosting;
 
 namespace Helpful.Hosting.WorkerService.DefaultWorkers
 {
+    /// <summary>
+    /// The <c>WebWorker</c> class is used by default in <code>HostFactory.RunApiWorker()</code>.
+    /// The <c>WebWorker</c> simply exposes an API over HTTP or HTTPS based on the <c>ListenerInfo</c> array passed into <code>HostFactory.RunApiWorker()</code>.
+    /// Any controller classes in your project will be automatically loaded and exposed.
+    /// The API includes a health check end point and Swagger, automatically.
+    /// A consumer should not need to reference this class manually as it is used by default.
+    /// </summary>
     public class WebWorker : IHostedService
     {
         private readonly Action<HostBuilderContext, WebHostBuilderContext, IServiceCollection> _iocDelegate;
         private readonly ListenerInfo[] _listenerInfo;
         private IHost _webHost;
 
+        /// <summary>
+        /// Constructor. All constructor params are passed into <code>HostFactory.RunApiWorker()</code>.
+        /// </summary>
+        /// <param name="iocDelegate">A delegate for setting IOC bindings</param>
+        /// <param name="listenerInfo">A collection of endpoints which determine how the web host listens for requests</param>
         public WebWorker(Action<HostBuilderContext, WebHostBuilderContext, IServiceCollection> iocDelegate, params ListenerInfo[] listenerInfo)
         {
             _iocDelegate = iocDelegate;

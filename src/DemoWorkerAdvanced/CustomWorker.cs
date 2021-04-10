@@ -10,6 +10,9 @@ using Microsoft.Extensions.Hosting;
 
 namespace DemoWorkerAdvanced
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class CustomWorker : CustomWorkerBase
     {
         private readonly IDayOfTheWeekService _dayOfTheWeekService;
