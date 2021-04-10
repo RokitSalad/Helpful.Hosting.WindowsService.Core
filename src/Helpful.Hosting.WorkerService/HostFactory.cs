@@ -25,6 +25,7 @@ namespace Helpful.Hosting.WorkerService
                 {
                     iocDelegate(hostContext, null, services);
                     services.AddSingleton(provider => listenerInfo);
+                    services.AddSingleton(provider => iocDelegate);
                     services.AddHostedService<TWorker>();
                 })
                 .Build().Run();
