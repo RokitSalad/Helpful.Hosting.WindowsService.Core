@@ -1,5 +1,6 @@
 ﻿using Helpful.Hosting.Dto;
 using Helpful.Hosting.WorkerService;
+using Helpful.Hosting.WorkerService.HostFactoryParams;
 using Serilog.Events;
 
 namespace DemoApiWorker
@@ -8,12 +9,20 @@ namespace DemoApiWorker
     {
         static void Main(string[] args)
         {
-            HostFactory.RunApiWorker(args, (hostContext, webHostContext, collection) => { },
-                app => { }, LogEventLevel.Debug, new ListenerInfo
+            HostFactory.RunApiWorker(new RunApiWorkerParams
+            {
+                Args = args,
+                LogLevel = LogEventLevel.Debug,
+                IocDelegate = (hostContext, webHostContext, collection) => { },
+                WebAppBuilderDelegate = app => { },
+                ListenerInfo = new[]
                 {
-                    Port = 8055
+                    new ListenerInfo
+                    {
+                        Port = 8055
+                    }
                 }
-            );
+            });
         }
     }
 }

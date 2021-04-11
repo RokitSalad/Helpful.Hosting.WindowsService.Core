@@ -1,97 +1,95 @@
 using System;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
-using System.Threading;
-using System.Threading.Tasks;
 using Helpful.Hosting.Dto;
 using Helpful.Hosting.WorkerService.DefaultWorkers;
+using Helpful.Hosting.WorkerService.HostFactoryParams;
 using Helpful.Logging.Standard;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Serilog.Events;
 
 namespace Helpful.Hosting.WorkerService
 {
     public static class HostFactory
     {
-        public static void RunCustomWorker<TWorker>(string[] args, Action<HostBuilderContext, WebHostBuilderContext, IServiceCollection> iocDelegate, Action<IApplicationBuilder> webAppBuilderDelegate, LogEventLevel logLevel, params ListenerInfo[] listenerInfo) where TWorker : class, IHostedService
+        public static void RunCustomWorker<TWorker>(RunCustomWorkerParams runCustomWorkerParams) where TWorker : class, IHostedService
         {
-            ConfigureLogger.StandardSetup(logLevel: logLevel);
-            Host.CreateDefaultBuilder(args)
+            ConfigureLogger.StandardSetup(logLevel: runCustomWorkerParams.LogLevel);
+            Host.CreateDefaultBuilder(runCustomWorkerParams.Args)
                 .UseWindowsService()
                 .ConfigureServices((hostContext, services) =>
                 {
-                    iocDelegate(hostContext, null, services);
-                    services.AddSingleton(provider => listenerInfo);
-                    services.AddSingleton(provider => iocDelegate);
-                    services.AddSingleton(provider => webAppBuilderDelegate);
+                    runCustomWorkerParams.IocDelegate(hostContext, null, services);
+                    services.AddSingleton(provider => runCustomWorkerParams.ListenerInfo);
+                    services.AddSingleton(provider => runCustomWorkerParams.IocDelegate);
+                    services.AddSingleton(provider => runCustomWorkerParams.WebAppBuilderDelegate);
                     services.AddHostedService<TWorker>();
                 })
                 .Build().Run();
         }
 
-        public static void RunCompoundWorker(string[] args, Func<CancellationToken, Task> workerProcess, Action<HostBuilderContext, WebHostBuilderContext, IServiceCollection> iocDelegate, Action<IApplicationBuilder> webAppBuilderDelegate, LogEventLevel logLevel, params ListenerInfo[] listenerInfo)
+        public static void RunCompoundWorker(RunCompoundWorkerParams runCompoundWorkerParams)
         {
-            RunCompoundWorker<CompoundWorker>(args, workerProcess, iocDelegate, webAppBuilderDelegate, logLevel, listenerInfo);
+            RunCompoundWorker<CompoundWorker>(runCompoundWorkerParams);
         }
 
-        public static void RunCompoundWorker<TWorker>(string[] args, Func<CancellationToken, Task> workerProcess, Action<HostBuilderContext, WebHostBuilderContext, IServiceCollection> iocDelegate, Action<IApplicationBuilder> webAppBuilderDelegate, LogEventLevel logLevel, params ListenerInfo[] listenerInfo) where TWorker : class, IHostedService
+        public static void RunCompoundWorker<TWorker>(RunCompoundWorkerParams runCompoundWorkerParams) where TWorker : class, IHostedService
         {
-            ConfigureLogger.StandardSetup(logLevel: logLevel);
-            Host.CreateDefaultBuilder(args)
+            ConfigureLogger.StandardSetup(logLevel: runCompoundWorkerParams.LogLevel);
+            Host.CreateDefaultBuilder(runCompoundWorkerParams.Args)
                 .UseWindowsService()
                 .ConfigureServices((hostContext, services) =>
                 {
-                    iocDelegate(hostContext, null, services);
-                    services.AddSingleton(provider => workerProcess);
-                    services.AddSingleton(provider => listenerInfo);
-                    services.AddSingleton(provider => iocDelegate);
-                    services.AddSingleton(provider => webAppBuilderDelegate);
+                    runCompoundWorkerParams.IocDelegate(hostContext, null, services);
+                    services.AddSingleton(provider => runCompoundWorkerParams.WorkerProcess);
+                    services.AddSingleton(provider => runCompoundWorkerParams.ListenerInfo);
+                    services.AddSingleton(provider => runCompoundWorkerParams.IocDelegate);
+                    services.AddSingleton(provider => runCompoundWorkerParams.WebAppBuilderDelegate);
                     services.AddHostedService<TWorker>();
                 })
                 .Build().Run();
         }
 
-        public static void RunBackgroundTaskWorker(string[] args, Func<CancellationToken, Task> workerProcess, Action<HostBuilderContext, WebHostBuilderContext, IServiceCollection> iocDelegate, LogEventLevel logLevel) 
+        public static void RunBackgroundTaskWorker(RunBackgroundTaskWorkerParams runBackgroundTaskWorkerParams) 
         {
-            RunBackgroundTaskWorker<BackgroundTaskWorker>(args, workerProcess, iocDelegate, logLevel);
+            RunBackgroundTaskWorker<BackgroundTaskWorker>(runBackgroundTaskWorkerParams);
         }
 
-        public static void RunBackgroundTaskWorker<TWorker>(string[] args, Func<CancellationToken, Task> workerProcess, Action<HostBuilderContext, WebHostBuilderContext, IServiceCollection> iocDelegate, LogEventLevel logLevel) where TWorker : class, IHostedService
+        public static void RunBackgroundTaskWorker<TWorker>(RunBackgroundTaskWorkerParams runBackgroundTaskWorkerParams) where TWorker : class, IHostedService
         {
-            ConfigureLogger.StandardSetup(logLevel: logLevel);
-            Host.CreateDefaultBuilder(args)
+            ConfigureLogger.StandardSetup(logLevel: runBackgroundTaskWorkerParams.LogLevel);
+            Host.CreateDefaultBuilder(runBackgroundTaskWorkerParams.Args)
                 .UseWindowsService()
                 .ConfigureServices((hostContext, services) =>
                 {
-                    iocDelegate(hostContext, null, services);
-                    services.AddSingleton(provider => workerProcess);
-                    services.AddSingleton(provider => iocDelegate);
+                    runBackgroundTaskWorkerParams.IocDelegate(hostContext, null, services);
+                    services.AddSingleton(provider => runBackgroundTaskWorkerParams.WorkerProcess);
+                    services.AddSingleton(provider => runBackgroundTaskWorkerParams.IocDelegate);
                     services.AddHostedService<TWorker>();
                 })
                 .Build().Run();
         }
 
-        public static void RunApiWorker(string[] args, Action<HostBuilderContext, WebHostBuilderContext, IServiceCollection> iocDelegate, Action<IApplicationBuilder> webAppBuilderDelegate, LogEventLevel logLevel, params ListenerInfo[] listenerInfo)
+        public static void RunApiWorker(RunApiWorkerParams runApiWorkerParams)
         {
-            RunApiWorker<WebWorker>(args, iocDelegate, webAppBuilderDelegate, logLevel, listenerInfo);
+            RunApiWorker<WebWorker>(runApiWorkerParams);
         }
 
-        public static void RunApiWorker<TWorker>(string[] args, Action<HostBuilderContext, WebHostBuilderContext, IServiceCollection> iocDelegate, Action<IApplicationBuilder> webAppBuilderDelegate, LogEventLevel logLevel, params ListenerInfo[] listenerInfo)
+        public static void RunApiWorker<TWorker>(RunApiWorkerParams runApiWorkerParams)
             where TWorker : class, IHostedService
         {
-            ConfigureLogger.StandardSetup(logLevel: logLevel);
-            Host.CreateDefaultBuilder(args)
+            ConfigureLogger.StandardSetup(logLevel: runApiWorkerParams.LogLevel);
+            Host.CreateDefaultBuilder(runApiWorkerParams.Args)
                 .UseWindowsService()
                 .ConfigureServices((hostContext, services) =>
                 {
-                    iocDelegate(hostContext, null, services);
-                    services.AddSingleton(provider => listenerInfo);
-                    services.AddSingleton(provider => iocDelegate);
-                    services.AddSingleton(provider => webAppBuilderDelegate);
+                    runApiWorkerParams.IocDelegate(hostContext, null, services);
+                    services.AddSingleton(provider => runApiWorkerParams.ListenerInfo);
+                    services.AddSingleton(provider => runApiWorkerParams.IocDelegate);
+                    services.AddSingleton(provider => runApiWorkerParams.WebAppBuilderDelegate);
                     services.AddHostedService<TWorker>();
                 })
                 .Build().Run();

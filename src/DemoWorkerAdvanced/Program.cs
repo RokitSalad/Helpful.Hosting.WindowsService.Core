@@ -2,14 +2,27 @@
 using DemoWorkerAdvanced.Services;
 using Helpful.Hosting.Dto;
 using Helpful.Hosting.WorkerService;
+using Helpful.Hosting.WorkerService.HostFactoryParams;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog.Events;
 
-HostFactory.RunCustomWorker<CustomWorker>(args, (hostContext, webHostContext, collection) =>
+
+HostFactory.RunCustomWorker<CustomWorker>(new RunCustomWorkerParams{
+    Args = args,
+    IocDelegate = (hostContext, webHostContext, collection) =>
     {
         collection.AddScoped<IDayOfTheWeekService, DayOfTheWeekService>();
-    }, app => { }, LogEventLevel.Debug, new ListenerInfo
+    },
+    WebAppBuilderDelegate = app =>
     {
-        Port = 8053
-    }
-);
+        // can be left out - this is defaulted
+    },
+    ListenerInfo = new []
+    {
+        new ListenerInfo
+        {
+            Port = 8053
+        }
+    },
+    LogLevel = LogEventLevel.Debug
+});
