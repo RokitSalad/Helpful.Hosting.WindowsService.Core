@@ -36,7 +36,7 @@ namespace Helpful.Hosting.WorkerService
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-            }); 
+            });
             app.UseSwagger();
             app.UseSwaggerUI(c => { c.SwaggerEndpoint($"/swagger/v{ApplicationMajorVersion}/swagger.json", $"{ApplicationTitle} V{ApplicationMajorVersion}"); });
             appBuilderDelegate(app);
