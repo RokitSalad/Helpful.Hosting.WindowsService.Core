@@ -150,18 +150,54 @@ stages:
         displayName: 'dotnet build'
         inputs:
           command: 'build'
+          arguments: 'norestore'
           projects: '**/Helpful.Hosting.WorkerService.csproj'
 
       - task: DotNetCoreCLI@2
         displayName: 'dotnet pack'
         inputs:
           command: 'pack'
+          arguments: 'nobuild'
           packagesToPack: '**/Helpful.Hosting.WorkerService.csproj'
           versioningScheme: 'byBuildNumber'
           verbosityPack: 'Diagnostic'
 
       - publish: '$(Build.ArtifactStagingDirectory)'
         artifact: Helpful.Hosting.WorkerService
+  
+  - job: BuildDemoWorkerAdvanced
+    displayName: 'Build for the Advanced Demo Worker'
+    steps: 
+
+      - task: UseDotNet@2
+        inputs:
+          packageType: 'sdk'
+          version: '5.0.x'
+
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet restore'
+        inputs:
+          command: 'restore'
+          feedsToUse: 'select'
+          projects: '**/*.csproj'
+    
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet build'
+        inputs:
+          command: 'build'
+          arguments: 'norestore'
+          projects: '**/DemoWorkerAdvanced.csproj'
+  
+      - task: DotNetCoreCLI@2
+        inputs:
+          command: 'publish'
+          arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/DemoWorkerAdvanced/'
+          publishWebProjects: false
+          projects: '**/DemoWorkerAdvanced.csproj'
+          zipAfterPublish: True
+    
+      - publish: '$(Build.ArtifactStagingDirectory)\DemoWorkerAdvanced'
+        artifact: DemoWorkerAdvanced
 
 - stage: IntegrationTest
   displayName: Integration Test
