@@ -23,7 +23,7 @@ stages:
   displayName: Build and Package
   jobs:
 
-  - job: build
+  - job: build4TS
     displayName: 'Build for TopShelf'
     steps:
 
@@ -135,7 +135,7 @@ stages:
     - publish: '$(Build.ArtifactStagingDirectory)\DemoServiceQuickStartApi'
       artifact: DemoServiceQuickStartApi
     
-  - job: build
+  - job: build4WS
     displayName: 'Build for Windows Worker Service'
     steps:
 
