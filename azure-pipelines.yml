@@ -314,6 +314,32 @@ stages:
                 & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\uninstallService.ps1" -ServiceName "DemoServiceQuickStartApi" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH
                 & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\installService.ps1" -ServiceName "DemoServiceQuickStartApi" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH -PipelineWorkspacePath $(Pipeline.Workspace)                
               errorActionPreference: 'stop'
+  
+  - deployment: VMDeploy_DemoWorkerAdvanced
+    dependsOn: VMDeploy_DevOps
+    condition: succeeded()
+    displayName: Deploy DemoWorkerAdvanced to IntegrationTesting
+    environment:
+      name: IntegrationTesting-EC2
+      resourceType: VirtualMachine
+      tags: service
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+  
+          - download: current
+            displayName: Download DemoWorkerAdvanced
+            artifact: 'DemoWorkerAdvanced'
+
+          - task: PowerShell@2
+            displayName: Run DevOps
+            inputs:
+              targetType: 'inline'
+              script: |
+                & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\uninstallWorkerService.ps1" -ServiceName "DemoWorkerAdvanced" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH
+                & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\installWorkerService.ps1" -ServiceName "DemoWorkerAdvanced" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH -PipelineWorkspacePath $(Pipeline.Workspace)                
+              errorActionPreference: 'stop'
 
   - job: RunInegrationTests
     displayName: Run Integration Tests
