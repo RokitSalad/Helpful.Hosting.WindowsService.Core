@@ -21,7 +21,7 @@ HostFactory.RunCustomWorker<CustomWorker>(new RunCustomWorkerParams{
     {
         new ListenerInfo
         {
-            Port = 8053
+            Port = 8152
         }
     },
     LogLevel = LogEventLevel.Debug

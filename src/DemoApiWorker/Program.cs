@@ -19,7 +19,7 @@ namespace DemoApiWorker
                 {
                     new ListenerInfo
                     {
-                        Port = 8055
+                        Port = 8150
                     }
                 }
             });
