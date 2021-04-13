@@ -155,7 +155,6 @@ stages:
         displayName: 'dotnet build'
         inputs:
           command: 'build'
-          arguments: 'norestore'
           projects: '**/Helpful.Hosting.WorkerService.csproj'
 
       - task: DotNetCoreCLI@2
@@ -190,7 +189,6 @@ stages:
         displayName: 'dotnet build'
         inputs:
           command: 'build'
-          arguments: 'norestore'
           projects: '**/DemoWorkerAdvanced.csproj'
   
       - task: DotNetCoreCLI@2
