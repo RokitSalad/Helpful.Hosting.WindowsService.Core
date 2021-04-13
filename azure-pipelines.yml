@@ -139,6 +139,11 @@ stages:
     displayName: 'Build for Windows Worker Service'
     steps:
 
+      - task: UseDotNet@2
+        inputs:
+          packageType: 'sdk'
+          version: '3.1'
+
       - task: DotNetCoreCLI@2
         displayName: 'dotnet restore'
         inputs:
@@ -179,7 +184,7 @@ stages:
         inputs:
           command: 'restore'
           feedsToUse: 'select'
-          projects: '**/*.csproj'
+          projects: '**/DemoWorkerAdvanced.csproj'
     
       - task: DotNetCoreCLI@2
         displayName: 'dotnet build'
