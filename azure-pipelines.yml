@@ -343,6 +343,7 @@ stages:
                 & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\uninstallWorkerService.ps1" -ServiceName "DemoWorkerAdvanced" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH
                 & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\installWorkerService.ps1" -ServiceName "DemoWorkerAdvanced" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH -PipelineWorkspacePath $(Pipeline.Workspace)                
               errorActionPreference: 'stop'
+              pwsh: true
 
   - job: RunInegrationTests
     displayName: Run Integration Tests
