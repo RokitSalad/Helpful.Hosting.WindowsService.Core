@@ -16,8 +16,25 @@ variables:
   - group: helpful-libraries-secrets
   - name: buildConfiguration
     value: "Release"
+  - name: major
+    value: 1
+  - name: minor
+    value: 0
 
 stages:
+
+- stage:
+  displayName: Build_Branch_Version_Number
+  condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
+  jobs:
+  - job: Build_Branch_Version_Number
+    variables:
+       brpatch: $[counter(variables['build.sourcebranchname'], 0)]
+    steps:
+      - bash: |
+           echo "##vso[build.updatebuildnumber]$(major).$(minor)-$(Build.SourceBranchName).$(brpatch)"
+        condition: ne(variables['Build.Reason'], 'PullRequest')
+        name: SetBranchBuildName
 
 - stage: BuildandPackage
   displayName: Build and Package
