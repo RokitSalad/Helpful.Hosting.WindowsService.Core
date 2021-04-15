@@ -32,7 +32,7 @@ stages:
        brpatch: $[counter(variables['build.sourcebranchname'], 0)]
     steps:
       - bash: |
-           echo "##vso[build.updatebuildnumber]$(major).$(minor)-$(Build.SourceBranchName).$(brpatch)"
+           echo "##vso[build.updatebuildnumber]0.0.$(brpatch)"
         condition: ne(variables['Build.Reason'], 'PullRequest')
         name: SetBranchBuildName
 
