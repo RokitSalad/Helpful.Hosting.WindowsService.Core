@@ -357,9 +357,8 @@ stages:
             inputs:
               targetType: 'inline'
               script: |
-                $serviceUsername = "$(demoworkeradvanced-username)"
                 #& "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\uninstallWorkerService.ps1" -ServiceName "DemoWorkerAdvanced" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH
-                & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\installWorkerService.ps1" -ServiceName "DemoWorkerAdvanced" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH -PipelineWorkspacePath $(Pipeline.Workspace) -ServiceUsername $serviceUsername -Password (ConvertTo-SecureString -String '$(demoworkeradvanced-password)' -AsPlainText -Force) -ServiceUsersGroup '$(integrationtest-server-serviceusers)'
+                & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\installWorkerService.ps1" -ServiceName "DemoWorkerAdvanced" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH -PipelineWorkspacePath $(Pipeline.Workspace) -ServiceUsername '$(demoworkeradvanced-username)' -Password (ConvertTo-SecureString -String '$(demoworkeradvanced-password)' -AsPlainText -Force) -ServiceUsersGroup '$(integrationtest-server-serviceusers)'
               errorActionPreference: 'stop'
               pwsh: true
 
