@@ -17,7 +17,7 @@ variables:
   - name: buildConfiguration
     value: "Release"
   - name: major
-    value: 1
+    value: 2
   - name: minor
     value: 0
 
@@ -166,25 +166,25 @@ stages:
         inputs:
           command: 'restore'
           feedsToUse: 'select'
-          projects: '**/Helpful.Hosting.WorkerService.csproj'
+          projects: '**/Helpful.Hosting.WorkerService.Windows.csproj'
 
       - task: DotNetCoreCLI@2
         displayName: 'dotnet build'
         inputs:
           command: 'build'
-          projects: '**/Helpful.Hosting.WorkerService.csproj'
+          projects: '**/Helpful.Hosting.WorkerService.Windows.csproj'
 
       - task: DotNetCoreCLI@2
         displayName: 'dotnet pack'
         inputs:
           command: 'pack'
           arguments: 'nobuild'
-          packagesToPack: '**/Helpful.Hosting.WorkerService.csproj'
+          packagesToPack: '**/Helpful.Hosting.WorkerService.Windows.csproj'
           versioningScheme: 'byBuildNumber'
           verbosityPack: 'Diagnostic'
 
       - publish: '$(Build.ArtifactStagingDirectory)'
-        artifact: Helpful.Hosting.WorkerService
+        artifact: Helpful.Hosting.WorkerService.Windows
   
   - job: BuildDemoWorkerAdvanced
     displayName: 'Build for the Advanced Demo Worker'
@@ -424,6 +424,10 @@ stages:
     - download: current
       displayName: Retrieve artifact
       artifact: Helpful.Hosting.WindowsService.Core
+  
+    - download: current
+      displayName: Retrieve artifact
+      artifact: Helpful.Hosting.WorkerService.Windows
   
     - task: DotNetCoreCLI@2
       displayName: 'nuget push'
