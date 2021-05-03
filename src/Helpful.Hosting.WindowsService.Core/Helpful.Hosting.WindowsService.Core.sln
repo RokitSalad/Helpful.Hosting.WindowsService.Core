@@ -27,15 +27,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helpful.Hosting.Dto", "..\H
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SampleUsage", "SampleUsage", "{CF50E07A-FD55-409A-8F82-E13AB4CB616E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoWorkerWithoutWeb", "..\DemoWorkerWithoutWeb\DemoWorkerWithoutWeb.csproj", "{E7EFAA00-8EFA-4251-85B2-550023512DA3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DemoWorkerWithoutWeb", "..\DemoWorkerWithoutWeb\DemoWorkerWithoutWeb.csproj", "{E7EFAA00-8EFA-4251-85B2-550023512DA3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoApiWorker", "..\DemoApiWorker\DemoApiWorker.csproj", "{84412BA2-E70E-45DA-9AE5-95A10676F917}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DemoApiWorker", "..\DemoApiWorker\DemoApiWorker.csproj", "{84412BA2-E70E-45DA-9AE5-95A10676F917}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoWorkerAdvanced", "..\DemoWorkerAdvanced\DemoWorkerAdvanced.csproj", "{52F7AE62-5AA5-443E-9429-C89BAEBEB097}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DemoWorkerAdvanced", "..\DemoWorkerAdvanced\DemoWorkerAdvanced.csproj", "{52F7AE62-5AA5-443E-9429-C89BAEBEB097}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Topshelf", "Topshelf", "{279226D7-D38A-4B27-B404-42541B1EB72B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WindowsWorkerService", "WindowsWorkerService", "{8745074E-8698-4AF9-AA40-9E00260EE0F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpful.Hosting.WorkerService.Windows", "..\Helpful.Hosting.WorkerService.Windows\Helpful.Hosting.WorkerService.Windows.csproj", "{69D1DA34-12D0-46EF-BC00-00843D879B39}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpful.Hosting.WorkerService.Linux", "..\Helpful.Hosting.WorkerService.Linux\Helpful.Hosting.WorkerService.Linux.csproj", "{95139C84-8F99-49B2-B7A0-BFA96107EB39}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -87,6 +91,14 @@ Global
 		{52F7AE62-5AA5-443E-9429-C89BAEBEB097}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52F7AE62-5AA5-443E-9429-C89BAEBEB097}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{52F7AE62-5AA5-443E-9429-C89BAEBEB097}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69D1DA34-12D0-46EF-BC00-00843D879B39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69D1DA34-12D0-46EF-BC00-00843D879B39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69D1DA34-12D0-46EF-BC00-00843D879B39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69D1DA34-12D0-46EF-BC00-00843D879B39}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95139C84-8F99-49B2-B7A0-BFA96107EB39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95139C84-8F99-49B2-B7A0-BFA96107EB39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95139C84-8F99-49B2-B7A0-BFA96107EB39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95139C84-8F99-49B2-B7A0-BFA96107EB39}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Helpful.Hosting.WorkerService;
 using Helpful.Hosting.WorkerService.HostFactoryParams;
+using Helpful.Hosting.WorkerService.Windows;
 using Serilog.Events;
 
 // Running the async task as a Worker Service on Windows and declaring the type of Worker class to use.

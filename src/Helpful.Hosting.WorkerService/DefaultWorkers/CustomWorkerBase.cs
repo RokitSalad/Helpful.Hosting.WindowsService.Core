@@ -40,7 +40,7 @@ namespace Helpful.Hosting.WorkerService.DefaultWorkers
         {
             try
             {
-                _webHost = HostFactory.BuildKestrelWebHost<DefaultWebStartup>(_webAppBuilderDelegate, _iocDelegate, _listenerInfo);
+                _webHost = WebHostFactory.BuildKestrelWebHost<DefaultWebStartup>(_webAppBuilderDelegate, _iocDelegate, _listenerInfo);
                 await _webHost.StartAsync(stoppingToken);
                 while (!stoppingToken.IsCancellationRequested)
                 {

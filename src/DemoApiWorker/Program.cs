@@ -1,6 +1,6 @@
 ﻿using Helpful.Hosting.Dto;
-using Helpful.Hosting.WorkerService;
 using Helpful.Hosting.WorkerService.HostFactoryParams;
+using Helpful.Hosting.WorkerService.Windows;
 using Serilog.Events;
 
 namespace DemoApiWorker

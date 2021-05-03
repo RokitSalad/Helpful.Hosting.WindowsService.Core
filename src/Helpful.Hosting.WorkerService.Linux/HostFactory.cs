@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Helpful.Hosting.WorkerService
+namespace Helpful.Hosting.WorkerService.Linux
 {
     public static class HostFactory
     {
@@ -19,7 +19,7 @@ namespace Helpful.Hosting.WorkerService
         {
             ConfigureLogger.StandardSetup(logLevel: runCustomWorkerParams.LogLevel);
             Host.CreateDefaultBuilder(runCustomWorkerParams.Args)
-                .UseWindowsService()
+                .UseSystemd()
                 .ConfigureServices((hostContext, services) =>
                 {
                     runCustomWorkerParams.IocDelegate(hostContext, null, services);
@@ -40,7 +40,7 @@ namespace Helpful.Hosting.WorkerService
         {
             ConfigureLogger.StandardSetup(logLevel: runCompoundWorkerParams.LogLevel);
             Host.CreateDefaultBuilder(runCompoundWorkerParams.Args)
-                .UseWindowsService()
+                .UseSystemd()
                 .ConfigureServices((hostContext, services) =>
                 {
                     runCompoundWorkerParams.IocDelegate(hostContext, null, services);
@@ -62,7 +62,7 @@ namespace Helpful.Hosting.WorkerService
         {
             ConfigureLogger.StandardSetup(logLevel: runBackgroundTaskWorkerParams.LogLevel);
             Host.CreateDefaultBuilder(runBackgroundTaskWorkerParams.Args)
-                .UseWindowsService()
+                .UseSystemd()
                 .ConfigureServices((hostContext, services) =>
                 {
                     runBackgroundTaskWorkerParams.IocDelegate(hostContext, null, services);
@@ -83,7 +83,7 @@ namespace Helpful.Hosting.WorkerService
         {
             ConfigureLogger.StandardSetup(logLevel: runApiWorkerParams.LogLevel);
             Host.CreateDefaultBuilder(runApiWorkerParams.Args)
-                .UseWindowsService()
+                .UseSystemd()
                 .ConfigureServices((hostContext, services) =>
                 {
                     runApiWorkerParams.IocDelegate(hostContext, null, services);

@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Helpful.Hosting.WorkerService\Helpful.Hosting.WorkerService.csproj" />
+    <ProjectReference Include="..\Helpful.Hosting.WorkerService.Windows\Helpful.Hosting.WorkerService.Windows.csproj" />
   </ItemGroup>
 
 </Project>

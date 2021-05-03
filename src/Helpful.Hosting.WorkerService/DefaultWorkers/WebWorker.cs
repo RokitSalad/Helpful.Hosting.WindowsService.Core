@@ -1,9 +1,12 @@
 using System;
+using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using Helpful.Hosting.Dto;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -38,7 +41,7 @@ namespace Helpful.Hosting.WorkerService.DefaultWorkers
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            _webHost = HostFactory.BuildKestrelWebHost<DefaultWebStartup>(_webAppBuilderDelegate, _iocDelegate, _listenerInfo);
+            _webHost = WebHostFactory.BuildKestrelWebHost<DefaultWebStartup>(_webAppBuilderDelegate, _iocDelegate, _listenerInfo);
             await _webHost.StartAsync(cancellationToken);
         }
 

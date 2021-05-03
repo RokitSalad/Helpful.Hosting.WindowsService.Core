@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using DemoWorker.Services;
 using Helpful.Hosting.Dto;
-using Helpful.Hosting.WorkerService;
 using Helpful.Hosting.WorkerService.HostFactoryParams;
+using Helpful.Hosting.WorkerService.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog.Events;
 
