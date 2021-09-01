@@ -401,8 +401,12 @@ stages:
     steps:
   
     - download: current
-      displayName: Retrieve artifact
-      artifact: Helpful.Hosting.WindowsService.Core
+      displayName: Retrieve artifact 4 Windows
+      artifact: Helpful.Hosting.WindowsService.Windows
+  
+    - download: current
+      displayName: Retrieve artifact 4 Linux
+      artifact: Helpful.Hosting.WindowsService.Linux
   
     - task: DotNetCoreCLI@2
       displayName: 'dotnet push'
