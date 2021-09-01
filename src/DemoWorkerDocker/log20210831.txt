@@ -1,0 +1,1 @@
+{"@t":"2021-08-31T10:55:24.8582744Z","@mt":"Standard setup configured for application: {ApplicationName}.","ApplicationName":"DemoWorkerDocker, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null","CONTEXT":{"SOURCE":"DemoWorkerDocker, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"}}

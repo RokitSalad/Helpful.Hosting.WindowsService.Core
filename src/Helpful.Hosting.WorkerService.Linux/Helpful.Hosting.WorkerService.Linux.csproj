@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Helpful.Hosting.WorkerService\Helpful.Hosting.WorkerService.csproj" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="5.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="3.1.15" />
   </ItemGroup>
 
 </Project>
