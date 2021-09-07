@@ -148,7 +148,7 @@ stages:
     - publish: '$(Build.ArtifactStagingDirectory)\DemoServiceQuickStartApi'
       artifact: DemoServiceQuickStartApi
     
-  - job: build4WS
+  - job: build4WWS
     displayName: 'Build for Windows Worker Service'
     steps:
 
@@ -181,6 +181,40 @@ stages:
 
       - publish: '$(Build.ArtifactStagingDirectory)'
         artifact: Helpful.Hosting.WorkerService.Windows
+    
+  - job: build4LWS
+    displayName: 'Build for Linux Worker Service'
+    steps:
+
+      - task: UseDotNet@2
+        inputs:
+          packageType: 'sdk'
+          version: '3.x'
+
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet restore'
+        inputs:
+          command: 'restore'
+          feedsToUse: 'select'
+          projects: '**/Helpful.Hosting.WorkerService.Linux.csproj'
+
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet build'
+        inputs:
+          command: 'build'
+          projects: '**/Helpful.Hosting.WorkerService.Linux.csproj'
+
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet pack'
+        inputs:
+          command: 'pack'
+          arguments: 'nobuild'
+          packagesToPack: '**/Helpful.Hosting.WorkerService.Linux.csproj'
+          versioningScheme: 'byBuildNumber'
+          verbosityPack: 'Diagnostic'
+
+      - publish: '$(Build.ArtifactStagingDirectory)'
+        artifact: Helpful.Hosting.Linux.Windows
   
   - job: BuildDemoWorkerAdvanced
     displayName: 'Build for the Advanced Demo Worker'
@@ -435,11 +469,11 @@ stages:
   
     - download: current
       displayName: Retrieve artifact 4 Windows
-      artifact: Helpful.Hosting.WindowsService.Windows
+      artifact: Helpful.Hosting.WorkerService.Windows
   
     - download: current
       displayName: Retrieve artifact 4 Linux
-      artifact: Helpful.Hosting.WindowsService.Linux
+      artifact: Helpful.Hosting.WorkerService.Linux
   
     - task: DotNetCoreCLI@2
       displayName: 'dotnet push'
