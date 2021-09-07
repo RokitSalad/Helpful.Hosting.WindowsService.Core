@@ -214,7 +214,7 @@ stages:
           verbosityPack: 'Diagnostic'
 
       - publish: '$(Build.ArtifactStagingDirectory)'
-        artifact: Helpful.Hosting.Linux.Windows
+        artifact: Helpful.Hosting.WorkerService.Linux
   
   - job: BuildDemoWorkerAdvanced
     displayName: 'Build for the Advanced Demo Worker'
