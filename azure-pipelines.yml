@@ -247,40 +247,7 @@ stages:
           zipAfterPublish: True
     
       - publish: '$(Build.ArtifactStagingDirectory)\DemoWorkerAdvanced'
-        artifact: DemoWorkerAdvanced        
-  
-  - job: BuildLinuxDocker
-    displayName: 'Build for the Docker/Linux Demo'
-    steps: 
-
-      - task: UseDotNet@2
-        inputs:
-          packageType: 'sdk'
-          version: '5.0.x'
-
-      - task: DotNetCoreCLI@2
-        displayName: 'dotnet restore'
-        inputs:
-          command: 'restore'
-          feedsToUse: 'select'
-          projects: '**/DemoWorkerDocker.csproj'
-    
-      - task: DotNetCoreCLI@2
-        displayName: 'dotnet build'
-        inputs:
-          command: 'build'
-          projects: '**/DemoWorkerDocker.csproj'
-  
-      - task: DotNetCoreCLI@2
-        inputs:
-          command: 'publish'
-          arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/DemoWorkerDocker/'
-          publishWebProjects: false
-          projects: '**/DemoWorkerDocker.csproj'
-          zipAfterPublish: True
-    
-      - publish: '$(Build.ArtifactStagingDirectory)\DemoWorkerDocker'
-        artifact: DemoWorkerDocker        
+        artifact: DemoWorkerAdvanced      
 
 - stage: IntegrationTest
   displayName: Integration Test
