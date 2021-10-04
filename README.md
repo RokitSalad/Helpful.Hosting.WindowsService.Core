@@ -1,213 +1,243 @@
-# Helpful.Hosting.WindowsService.Core
-Base package for dotnet core 3.x microservices
+# Helpful.Hosting.WorkerService
+Base package for Core 3.x and DotNet 5+ services
 
-*This is still under development - expect significant changes in implementation until v1.1.*
+## Background
+In the beginning, there were Windows Services. These were unforgiving creatures which required the developer to write an installer, they were littered with calls to Thread.Sleep to give developers time to attach a debugger. Reliability was rare, standards were low, and debugging was a pain. Then came [Topshelf](http://topshelf-project.com/ 'Topshelf') and the world of Windows Services became a brighter place, full of optimism and F5 debugging. With Windows Service development now looking more like developing for the commandline, even the great monster IIS felt the impact, as developers revelled in the consistent results and simple API. Many developement teams built wrappers around Topshelf to allow very easy setup of new services based on their favourite standards, and to help new developers get started without having to know too much. Then DotNet started to catch up, and the [Worker Service](https://docs.microsoft.com/en-us/dotnet/core/extensions/workers 'Worker Services in .NET') stepped forward with an API reminiscent of Topshelf, as if someone somewhere had been watching and learning from Topshelf's success. With the Worker Service came a way to easily build and debug applications which could then be deployed in many different ways, with just native, DotNet libraries. The future was here, Topshelf had its feet up in front of a log fire, smoking a pipe, enjoying retirement, but things still weren't quite finished. Spinning up a Worker Service still requires some thought and some wider understanding of the API, if the right approach is to be taken - we still need some wrappers which make some reasonable assumptions and provide some simple, yet powerful, 'get started quick' functionality. To this end, I decided to extend my Helpful.Hosting.WindowsService.Core library to include Worker Service packages targeting both Windows Services and Linux Systemd. I hope someone somewhere finds this helpful.
+
+## Why?
+If you want a very quick way to get started writing either a Windows Service or a Systemd service in .NET Core 3.x or DotNet 5+, this library is for you. Services spun up with this library get the following features out of the box:
+* Serilog logging from the [Helpful.Logging.Standard](https://github.com/RokitSalad/Helpful.Logging.Standard) library (added as a dependency).
+* Swagger endpoints for any exposed API's added using Controller Actions, exposed at /swagger.
+* A basic healthcheck endpoint exposed at /healthcheck (the endpoint appears in the swagger definitions).
+
+Benefits of this library over other Host wrappers are:
+* Well defined mechanism for declaring IOC bindings.
+* Simple mechanism for setting options in the web app builder.
+* A full range of choices for implementation, from very simple, to very flexible.
+
 ## Overview
-This package uses [TopShelf](http://topshelf-project.com/) to give a developer fast, 
-low code approach to getting a service running. There are different ways to override the default behaviour, allowing a developer to choose between:
-* Just my standard configuration
-* My configuration plus other options
-* Fully implementing their own configuration.
+The original Helpful.Hosting.WindowsService.Core is still in this repo, and deployed to Nuget as normal. See [the original readme](https://github.com/RokitSalad/Helpful.Hosting.WindowsService.Core/blob/master/src/Helpful.Hosting.WindowsService.Core/README.md 'README.md') for the original doco. Much of the API has remained the same in this update.
 
-## Quick Start
-1. Create a dotnet core commandline project and install Helpful.Hosting.WindowsService.Core from Nuget.org.
-2. Make your Program.cs look like this:
-```c#
-class Program
+There are 5 sample projects in this repository, which show different ways to use this library. The quick start sections, below, are based on each.
+
+## Quick Start - for a Web API running as a Windows Service
+1. Create a commandline project for .NET Core 3.x or DotNet 5 (or above).
+2. Add a NuGet reference to **Helpful.Hosting.WorkerService.Windows**.
+3. Modify your Program.cs with the following (either as a top level statement, or as the content of Main):
+```csharp
+HostFactory.RunApiWorker(new RunApiWorkerParams
 {
-    static void Main(string[] args)
+    Args = args,
+    ListenerInfo = new[]
     {
-        var runner = new HostRunner("DemoService_QuickStartApi", new ListenerInfo
-            {
-                Port = 8053
-            });
-            var exit = runner.RunWebService();
+        new ListenerInfo
+        {
+            Port = 8150
+        }
+    }
+});
+```
+4. There is no 4 - that's it!
+
+If you hit F5, you'll now have a webservice listening on port 8150 for non-TLS traffic. There is already a health check endpoint exposed at http://localhost:8150/healthcheck. To add more controllers, just implement Microsoft.AspNetCore.Mvc.ControllerBase. For example:
+```csharp
+[ApiController]
+[Route("[controller]")]
+public class DayOfTheWeekController : ControllerBase
+{
+    [HttpGet]
+    public string Get()
+    {
+        return DateTime.Now.DayOfWeek.ToString();
     }
 }
 ```
-3. There is no 3, that's it!
+Controllers are found automatically and exposed via however many ListenerInfo objects were injected to the RunApiWorker method.
 
-Hit F5, and you have a web api listening on port 5002. If you go to http://localhost:8053/healthcheck or 
-http://localhost:8053/swagger you'll see that your service is running. Just like TopShelf, because the hostname is * the service
-is listening publicly and on localhost.
+## Quick Start - for a Linux Systemd running a simple looped process with no Web API
 
-If you want your service to do more than just respond to http requests, you will want to make this a 
-compound service. Try this code:
-```c#
-class Program
+1. Create a commandline project for .NET Core 3.x or DotNet 5 (or above).
+2. Add a NuGet reference to **Helpful.Hosting.WorkerService.Linux**.
+3. Modify your Program.cs with the following (either as a top level statement, or as the content of Main):
+```csharp
+HostFactory.RunBackgroundTaskWorker(new RunBackgroundTaskWorkerParams
 {
-    static void Main(string[] args)
+    Args = args,
+    WorkerProcess = async (cancellationToken) =>
     {
-        var runner = new HostRunner("DemoService_BackgroundTask", new ListenerInfo
-            {
-                Port = 8052
-            });
-            var exit = runner.RunCompoundService(obj => Console.WriteLine($"The time is: {DateTime.Now:T}"), null, 5000);
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            Console.WriteLine(DateTime.Now);
+            await Task.Delay(4000);
+        }
+    }
+});
+```
+4. There is no 4 - that's it!
+
+If you hit F5, you will just get the loop running with no endpoints exposed on any ports. There won't even be the health check. Any controllers you add to the project will be ignored.
+
+## Quick Start - for a Linux Systemd running a simple looped process and exposing a Web API
+
+1. Create a commandline project for .NET Core 3.x or DotNet 5 (or above).
+2. Add a NuGet reference to **Helpful.Hosting.WorkerService.Linux**.
+3. Modify your Program.cs with the following (either as a top level statement, or as the content of Main):
+```csharp
+HostFactory.RunCompoundWorker(new RunCompoundWorkerParams
+{
+    Args = args,
+    WorkerProcess = async (cancellationToken) =>
+    {
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            Console.WriteLine(DateTime.Now);
+            await Task.Delay(4000);
+        }
+    },
+    ListenerInfo = new []{
+        new ListenerInfo
+        {
+            Port = 8151
+        }
+    } 
+});
+```
+4. There is no 4 - that's it!
+
+If you hit F5 you will see the current date and time written to the console in a loop. The healthcheck is also exposed at http://localhost:8151/healthcheck. You can add your own controllers to this service as well - it will happily run the background process and respond to HTTP requests.
+
+## Quick Start - for more advanced usage
+
+1. Create a commandline project for .NET Core 3.x or DotNet 5 (or above).
+2. Add a NuGet reference to **Helpful.Hosting.WorkerService.Windows**.
+3. Add a custom worker class to your project. Something like this:
+```csharp
+public class CustomWorker : CustomWorkerBase
+{
+    private readonly IDayOfTheWeekService _dayOfTheWeekService;
+
+    public CustomWorker(IDayOfTheWeekService dayOfTheWeekService, Action<IApplicationBuilder> webAppBuilderDelegate,
+        Action<HostBuilderContext, WebHostBuilderContext, IServiceCollection> iocDelegate, 
+        params ListenerInfo[] listenerInfo)
+    : base(webAppBuilderDelegate, iocDelegate, listenerInfo)
+    {
+        _dayOfTheWeekService = dayOfTheWeekService;
+    }
+
+    protected override async Task CustomWorkerLogic(CancellationToken stoppingToken)
+    {
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            Console.WriteLine($"The day is {_dayOfTheWeekService.GetDayOfTheWeek()}");
+            Console.WriteLine($"The time is {DateTime.Now.ToLongTimeString()}");
+            Console.WriteLine(" --- ");
+            await Task.Delay(4000);
+        }
     }
 }
 ```
-Now when you hit F5 you can still see the service has a healthcheck and swagger endpoints (https://localhost:8052/healthcheck)
-(https://localhost:8052/swagger), but now you will also see output from the lambda in the command window, every 5 seconds.
-Obviously, you can do much more with this than just print the time.
-
-## Samples
-There are sample projects included with the source code. The DemoService project shows how to use your own custom 
-startup class.
-```c#
-class CustomStartup
+4. Modify your Program.cs with the following (either as a top level statement, or as the content of Main):
+```csharp
+HostFactory.RunCustomWorker<CustomWorker>(new RunCustomWorkerParams{
+    Args = args,
+    IocDelegate = (hostContext, webHostContext, collection) =>
+    {
+        collection.AddScoped<IDayOfTheWeekService, DayOfTheWeekService>();
+    },
+    ListenerInfo = new []
+    {
+        new ListenerInfo
+        {
+            Port = 8152
+        }
+    }
+});
+```
+Both the call to HostFactory.RunCustomWorker<> and the code in the CustomWorker itself, reference the DayOfTheWeekService. This could be any dependency in your project which you need to inject. The DayOfTheWeekService in the samples is one example:
+```csharp
+public class DayOfTheWeekService : IDayOfTheWeekService
 {
-    public IConfiguration Configuration { get; }
-
-    public CustomStartup(IConfiguration configuration)
+    public string GetDayOfTheWeek()
     {
-        Configuration = configuration;
-    }
-
-    // This method gets called by the runtime. Use this method to add services to the container.
-    public void ConfigureServices(IServiceCollection services)
-    {
-        BasicConfiguration.ConfigureBasicServices(services);
-        // Add your additional service setup code here
-    }
-
-
-    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-    {
-        BasicConfiguration.Configure(app, env);
-        // Add your additional configuration code here
+        return DateTime.Now.DayOfWeek.ToString();
     }
 }
 ```
-and
-```c#
-class Program
-{
-    static void Main(string[] args)
-    {
-        var runner = new HostRunner<CustomStartup>("DemoService", new ListenerInfo
-                {
-                    Port = 8050
-                },
-                new ListenerInfo
-                {
-                    AllowInvalidCert = true,
-                    Port = 8051,
-                    SslCertStoreName = StoreName.My,
-                    SslCertSubject = "CN=localhost", 
-                    UseSsl = true
-                });
-            var exit = runner.RunWebService(LogEventLevel.Debug);
-    }
-}
+By declaring IOC bindings in the IocDelegate, you make your dependencies available to your controllers and to any CustomWorkers. The limitation of the first two 'quick start' methods, is that you don't get IOC injection, as you're simply defining a function as the background worker.
+
+>To target Linux, reference the **Helpful.Hosting.WorkerService.Linux** NuGet package, for Windows, use the **Hosting.WorkerService.Windows** package. Other than the choice of package, there is no difference in the way the library is used.
+
+## Using HostFactory
+The different methods available on the HostFactory are:
+```csharp
+HostFactory.RunApiWorker(RunApiWorkerParams runApiWorkerParams)
 ```
-The bits to take note of here are the calls to the two static setup methods:
-```c#
-BasicConfiguration.ConfigureBasicServices(services);
-...
-BasicConfiguration.Configure(app, env);
+```csharp
+HostFactory.RunApiWorker<TWorker>(RunApiWorkerParams runApiWorkerParams) where TWorker : class, IHostedService
 ```
-These allow you to still use the standard configuration which you'd get without a custom setup, and then add to it just
-like you would in any other setup class.
-
-Other things to note here are the use of a certificate for configuring SSL, and setting the log level to Debug (the default level is Information).
-
-### Options
-1. Use all the defaults - *hardly any coding of set up.*
-2. Add your own setup class and add more to the defaults - *very small amount of additional setup depending on your requirements.*
-3. Add your own setup class and fully implement your own configuration - *a little bit more work.*
-4. Completely ignore my quick setup and implement your own HostFactory.Run configuration using TopShelf directly - *still a win as you get the other nice features of this package.*
-
-## Build Status
-[![Build Status](https://dev.azure.com/pete0159/Helpful.Libraries/_apis/build/status/RokitSalad.Helpful.Hosting.WindowsService.Core?branchName=master)](https://dev.azure.com/pete0159/Helpful.Libraries/_build/latest?definitionId=4&branchName=master)
-
-## Configuration in More Detail
-### Service account
-Service credentials can be injected when running any of:
-```c#
-public class HostRunner<TStartup> where TStartup : class
-{
-    ...
-
-    public TopshelfExitCode RunWebService(LogEventLevel logLevel = LogEventLevel.Information, Credentials credentials = null)
-    {
-        ...
-    }
-
-    public TopshelfExitCode RunCompoundService(Action<object> serviceAction, object state, int scheduleMilliseconds, LogEventLevel logLevel = LogEventLevel.Information, Credentials credentials = null)
-    {
-        ...
-    }
-
-    public TopshelfExitCode Run(BasicWebService<TStartup> service, LogEventLevel logLevel = LogEventLevel.Information, Credentials credentials = null)
-    {
-        ...
-    }
-
-    ...
-
-}
+```csharp
+HostFactory.RunBackgroundTaskWorker(RunBackgroundTaskWorkerParams runBackgroundTaskWorkerParams) 
 ```
-The service will create Swagger and health check endpoints for you automatically, so the account the service is running under must have permissions to reserve TCP ports. For this reason, the default behaviour is to use the Local System account, as this is the only standard account available which will have access to do this. 
+```csharp
+HostFactory.RunBackgroundTaskWorker<TWorker>(RunBackgroundTaskWorkerParams runBackgroundTaskWorkerParams) where TWorker : class, IHostedService
+```
+```csharp
+HostFactory.RunCompoundWorker(RunCompoundWorkerParams runCompoundWorkerParams)
+```
+```csharp
+HostFactory.RunCompoundWorker<TWorker>(RunCompoundWorkerParams runCompoundWorkerParams) where TWorker : class, IHostedService
+```
+```csharp
+HostFactory.RunCustomWorker<TWorker>(RunCustomWorkerParams runCustomWorkerParams) where TWorker : class, IHostedService
+```
+For each method (other than **RunCustomWorker<>()**) a default implementation is provided for **TWorker** which will work fine for most scenarios. If you think you want to provide your own, then I recommend considering the **RunCustomWorker<>()** option, as that gives you far more flexibility. The other generic methods end up being quite restrictive, as they're there predominantly to support the non-generic options.
 
-*Using the Local System account is not advised. This account has more access than an Administrator.*
-
-### Log levels
-By default, the logging level is set to Information. Serilog is the logging package used, so any level of logging available in Serilog is permitted. 
-* Verbose
-* Debug
-* Information
-* Warning
-* Error
-* Fatal
-
-The log level can be injected when running the service in one of the HostRunner methods, above.
-
-### HTTPS
-The constructor of HostRunner allows the injection of a collection of ListenerInfo:
-```c#
-public HostRunner(string serviceName, params ListenerInfo[] listenerInfo)
-
-...
-
-/// <summary>
-/// Defines an HTTP binding.
-/// </summary>
-public class ListenerInfo
+Each option has a params class associated with it. These params provide the following options:
+### Args
+```csharp
+public string[] Args { get; set; } = { };
+```
+The **Args** property is there so you can pass any commandline arguments into the host builder.
+### IocDelegate
+```csharp
+public Action<HostBuilderContext, WebHostBuilderContext, IServiceCollection> IocDelegate { get; set; } = (hostContext, webHostContext, services) => { };
+```
+The **IocDelegate** property allows you to declare your ioc bindings. You have two contexts, **hostContext** and **webHostContext**. When the library is resolving IOC in the context of the background worker, the **hostContext** will be used. When the library is resolving IOC in the context of the web API, the **webHostContext** will be used. In either case, the unused context is null.
+### WebAppBuilderDelegate
+```csharp
+public Action<IApplicationBuilder> WebAppBuilderDelegate { get; set; } = app => { };
+```
+The **WebAppBuilderDelegate** is there to allow you to add your own customisations into the web app builder.
+### LogLevel
+```csharp
+public LogEventLevel LogLevel { get; set; } = LogEventLevel.Information;
+```
+[Helpful.Logging.Standard](https://github.com/RokitSalad/Helpful.Logging.Standard) is a dependency, and is configured automatically for Serilog logging. The level of logging for the entire service is set using the **LogLevel** property.
+### ListenerInfo
+```csharp
+public ListenerInfo[] ListenerInfo { get; set; }
+```
+The **ListenerInfo** property defines any endpoints which you want the API to listen on. It looks like this:
+```csharp
+ public class ListenerInfo
 {
-    /// <summary>
-    /// The IP address to listen on. Leave null to listen on all addresses.
-    /// </summary>
     public string IpAddress { get; set; }
-
-    /// <summary>
-    /// The port to listen on.
-    /// </summary>
     public int Port { get; set; }
-
-    /// <summary>
-    /// Whether to use TLS.
-    /// </summary>
     public bool UseTls { get; set; }
-
-    /// <summary>
-    /// The name of the store where the certificate is stored which should be used for this binding. Leave null if UseTls is false.
-    /// </summary>
     public StoreName SslCertStoreName { get; set; }
-
-    /// <summary>
-    /// The subject of the certificate which should be used for this binding. Leave null if UseTls is false.
-    /// </summary>
     public string SslCertSubject { get; set; }
-
-    /// <summary>
-    /// A flag to indicate whether to allow the located certificate to be used if it is invalid.
-    /// </summary>
     public bool AllowInvalidCert { get; set; }
 }
 ```
-In order to respond to HTTPS calls, your service must have access to a certificate identifiable by the store name and subject. Adding multiple ListenerInfo's will result in multiple bindings.
+Most of these properties should be pretty self explanatory, but to be clear, if **UseTls** is false, the certificate properties can be left null. You can add as many of these as you like, allowing you to listen on multiple ports, IP addresses, and with different certificates for TLS.
+### WorkerProcess
+```csharp
+public Func<CancellationToken, Task> WorkerProcess { get; set; }
+```
+The **WorkerProcess** is a **Task** which will be ran in the background, when choosing either a compound service or a background process, as your service model. It will be awaited by the default **TWorker** implementations, so it should normally be a loop of some kind, otherwise your service will run for a short time and then stop. The **CancellationToken** is triggered when the service is stopping.
+## What's in the future?
+It's likely that I'll deprecate the Topshelf elements of this library at some point, to simplify the codebase. The packages will remain in NuGet.org and I'll create a branch with the source code so it's available if anyone wants it.
 
-### Helpful.Logging.Standard
-[Helpful.Logging.Standard](https://github.com/RokitSalad/Helpful.Logging.Standard) is automatically referenced and configured for logging to the console and to a rolling text file. See the link for usage from your own code.
+I haven't done much in CI with the Linux package - I'm likely going to have it spin up a Linux container in either Azure or AWS and deploy the **DemoWorkerDocker** project there to test, and to provide a sample on how to do that.
 
+I may break things down a little, so there's an additional package delivering just a Worker Service, which can be pushed to Azure or used however you like.

@@ -23,5 +23,4 @@ COPY --from=publish /app/publish .
 WORKDIR /etc/systemd/system
 COPY --from=publish /app/publish/src/DemoWorkerDocker/demoworkerdocker.service .
 RUN chmod +x /app/initialise.sh
-RUN echo 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 ENTRYPOINT ["/bin/bash", "/app/initialise.sh"]
