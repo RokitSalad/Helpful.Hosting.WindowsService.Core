@@ -57,7 +57,7 @@ Controllers are found automatically and exposed via however many ListenerInfo ob
 ## Quick Start - for a Linux Systemd running a simple looped process with no Web API
 
 1. Create a commandline project for .NET Core 3.x or DotNet 5 (or above).
-2. Add a NuGet reference to **Helpful.Hosting.WorkerService.Linux**.
+2. Add a NuGet reference to **Helpful.Hosting.WorkerService.Systemd**.
 3. Modify your Program.cs with the following (either as a top level statement, or as the content of Main):
 ```csharp
 HostFactory.RunBackgroundTaskWorker(new RunBackgroundTaskWorkerParams
@@ -80,7 +80,7 @@ If you hit F5, you will just get the loop running with no endpoints exposed on a
 ## Quick Start - for a Linux Systemd running a simple looped process and exposing a Web API
 
 1. Create a commandline project for .NET Core 3.x or DotNet 5 (or above).
-2. Add a NuGet reference to **Helpful.Hosting.WorkerService.Linux**.
+2. Add a NuGet reference to **Helpful.Hosting.WorkerService.Systemd**.
 3. Modify your Program.cs with the following (either as a top level statement, or as the content of Main):
 ```csharp
 HostFactory.RunCompoundWorker(new RunCompoundWorkerParams
@@ -165,7 +165,7 @@ public class DayOfTheWeekService : IDayOfTheWeekService
 ```
 By declaring IOC bindings in the IocDelegate, you make your dependencies available to your controllers and to any CustomWorkers. The limitation of the first two 'quick start' methods, is that you don't get IOC injection, as you're simply defining a function as the background worker.
 
->To target Linux, reference the **Helpful.Hosting.WorkerService.Linux** NuGet package, for Windows, use the **Hosting.WorkerService.Windows** package. Other than the choice of package, there is no difference in the way the library is used.
+>To target Linux, reference the **Helpful.Hosting.WorkerService.Systemd** NuGet package, for Windows, use the **Hosting.WorkerService.Windows** package. Other than the choice of package, there is no difference in the way the library is used.
 
 ## Using HostFactory
 The different methods available on the HostFactory are:

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using DemoWorkerDocker.Services;
 using Helpful.Hosting.Dto;
 using Helpful.Hosting.WorkerService.HostFactoryParams;
-using Helpful.Hosting.WorkerService.Linux;
+using Helpful.Hosting.WorkerService.Systemd;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog.Events;
 

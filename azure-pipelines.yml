@@ -19,7 +19,7 @@ variables:
 
 stages:
 
-- stage:
+- stage: Init
   displayName: Build_Branch_Version_Number
   condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
   jobs:
@@ -196,25 +196,25 @@ stages:
         inputs:
           command: 'restore'
           feedsToUse: 'select'
-          projects: '**/Helpful.Hosting.WorkerService.Linux.csproj'
+          projects: '**/Helpful.Hosting.WorkerService.Systemd.csproj'
 
       - task: DotNetCoreCLI@2
         displayName: 'dotnet build'
         inputs:
           command: 'build'
-          projects: '**/Helpful.Hosting.WorkerService.Linux.csproj'
+          projects: '**/Helpful.Hosting.WorkerService.Systemd.csproj'
 
       - task: DotNetCoreCLI@2
         displayName: 'dotnet pack'
         inputs:
           command: 'pack'
           arguments: 'nobuild'
-          packagesToPack: '**/Helpful.Hosting.WorkerService.Linux.csproj'
+          packagesToPack: '**/Helpful.Hosting.WorkerService.Systemd.csproj'
           versioningScheme: 'byBuildNumber'
           verbosityPack: 'Diagnostic'
 
       - publish: '$(Build.ArtifactStagingDirectory)'
-        artifact: Helpful.Hosting.WorkerService.Linux
+        artifact: Helpful.Hosting.WorkerService.Systemd
   
   - job: BuildDemoWorkerAdvanced
     displayName: 'Build for the Advanced Demo Worker'
@@ -440,7 +440,7 @@ stages:
   
     - download: current
       displayName: Retrieve artifact 4 Linux
-      artifact: Helpful.Hosting.WorkerService.Linux
+      artifact: Helpful.Hosting.WorkerService.Systemd
   
     - task: DotNetCoreCLI@2
       displayName: 'dotnet push'

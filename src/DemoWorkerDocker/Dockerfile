@@ -6,7 +6,7 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
 COPY ["DemoWorkerDocker/DemoWorkerDocker.csproj", "DemoWorkerDocker/"]
-COPY ["Helpful.Hosting.WorkerService.Linux/Helpful.Hosting.WorkerService.Linux.csproj", "Helpful.Hosting.WorkerService.Linux/"]
+COPY ["Helpful.Hosting.WorkerService.Systemd/Helpful.Hosting.WorkerService.Systemd.csproj", "Helpful.Hosting.WorkerService.Systemd/"]
 COPY ["Helpful.Hosting.WorkerService/Helpful.Hosting.WorkerService.csproj", "Helpful.Hosting.WorkerService/"]
 COPY ["Helpful.Hosting.Dto/Helpful.Hosting.Dto.csproj", "Helpful.Hosting.Dto/"]
 RUN dotnet restore "DemoWorkerDocker/DemoWorkerDocker.csproj"

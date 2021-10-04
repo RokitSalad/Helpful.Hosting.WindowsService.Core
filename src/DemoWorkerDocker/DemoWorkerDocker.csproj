@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Helpful.Hosting.WorkerService.Linux\Helpful.Hosting.WorkerService.Linux.csproj" />
+    <ProjectReference Include="..\Helpful.Hosting.WorkerService.Systemd\Helpful.Hosting.WorkerService.Systemd.csproj" />
   </ItemGroup>
 
   <ItemGroup>

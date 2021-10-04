@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Helpful.Hosting.WorkerService.Linux
+namespace Helpful.Hosting.WorkerService.Systemd
 {
     public static class HostFactory
     {
