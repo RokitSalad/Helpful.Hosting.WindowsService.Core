@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>dotnet-Helpful.Hosting.WorkerService-FCF1F2DE-8104-4481-ABE9-EDCC918A9255</UserSecretsId>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Helpful.Logging.Standard" Version="1.0.21" />
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Owin" Version="3.1.13" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="Microsoft.NETCore.App" Version="2.2.8" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.1" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Helpful.Hosting.Dto\Helpful.Hosting.Dto.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="HostFactoryParams\" />
+  </ItemGroup>
+</Project>

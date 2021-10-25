@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
+using Helpful.Hosting.Dto;
 using Helpful.Logging.Standard;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;

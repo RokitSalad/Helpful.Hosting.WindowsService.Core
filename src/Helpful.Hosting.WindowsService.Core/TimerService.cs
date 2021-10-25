@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Timers;
+using Helpful.Hosting.Dto;
 using Topshelf;
 
 namespace Helpful.Hosting.WindowsService.Core
 {
     public class TimerService : TimerService<DefaultStartup>
     {
-        public TimerService(Action<object> singleRun, object state, int scheduleMilliseconds) : base(singleRun, state, scheduleMilliseconds)
+        public TimerService(Action<object> timerElapsedEventHandler, object state, int scheduleMilliseconds) : base(timerElapsedEventHandler, state, scheduleMilliseconds)
         {
         }
     }
@@ -15,13 +16,13 @@ namespace Helpful.Hosting.WindowsService.Core
     {
         private readonly Timer _timer;
 
-        public TimerService(Action<object> singleRun, object state, int scheduleMilliseconds, params ListenerInfo[] listenerInfo) : base(listenerInfo)
+        public TimerService(Action<object> timerElapsedEventHandler, object state, int scheduleMilliseconds, params ListenerInfo[] listenerInfo) : base(listenerInfo)
         {
             _timer = new Timer(scheduleMilliseconds)
             {
                 AutoReset = true
             };
-            _timer.Elapsed += (sender, args) => singleRun(state);
+            _timer.Elapsed += (sender, args) => timerElapsedEventHandler(state);
         }
 
         public override bool Start(HostControl hostControl)

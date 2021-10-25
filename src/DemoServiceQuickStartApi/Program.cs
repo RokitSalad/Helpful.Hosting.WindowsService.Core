@@ -1,6 +1,5 @@
-﻿using System;
+﻿using Helpful.Hosting.Dto;
 using Helpful.Hosting.WindowsService.Core;
-using Topshelf;
 
 namespace DemoServiceQuickStartApi
 {

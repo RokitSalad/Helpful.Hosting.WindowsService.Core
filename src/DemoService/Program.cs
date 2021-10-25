@@ -1,4 +1,5 @@
 ﻿using System.Security.Cryptography.X509Certificates;
+using Helpful.Hosting.Dto;
 using Helpful.Hosting.WindowsService.Core;
 using Serilog.Events;
 

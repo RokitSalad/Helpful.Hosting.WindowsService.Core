@@ -10,7 +10,7 @@ namespace Helpful.Hosting.WindowsService.Core.IntegrationTests
     public class EndpointTests
     {
         private HttpClient _httpClient;
-        private static (string, int)[] _httpInfo = {("http", 8050), ("https", 8051), ("http", 8052), ("http", 8053)};
+        private static (string, int)[] _httpInfo = {("http", 8050), ("https", 8051), ("http", 8052), ("http", 8053), ("http", 8152)};
         private IConfigurationRoot _config;
 
         [OneTimeSetUp]

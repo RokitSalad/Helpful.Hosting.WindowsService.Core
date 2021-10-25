@@ -2,11 +2,12 @@
 # Build and test ASP.NET Core projects targeting the full .NET Framework.
 # Add steps that publish symbols, save build artifacts, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
-name: 1.0.$(Rev:r)
+name: 1.1.$(Rev:r)
 
 trigger:
 - master
 - dev
+- feature/worker-services
 
 pool:
   vmImage: 'windows-latest'
@@ -18,11 +19,25 @@ variables:
 
 stages:
 
+- stage: Init
+  displayName: Build_Branch_Version_Number
+  condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
+  jobs:
+  - job: Build_Branch_Version_Number
+    variables:
+       brpatch: $[counter(variables['build.sourcebranchname'], 0)]
+    steps:
+      - bash: |
+           echo "##vso[build.updatebuildnumber]0.0.$(brpatch)"
+        condition: ne(variables['Build.Reason'], 'PullRequest')
+        name: SetBranchBuildName
+
 - stage: BuildandPackage
   displayName: Build and Package
   jobs:
 
-  - job: build
+  - job: build4TS
+    displayName: 'Build for TopShelf'
     steps:
 
       - task: DotNetCoreCLI@2
@@ -132,6 +147,107 @@ stages:
     
     - publish: '$(Build.ArtifactStagingDirectory)\DemoServiceQuickStartApi'
       artifact: DemoServiceQuickStartApi
+    
+  - job: build4WWS
+    displayName: 'Build for Windows Worker Service'
+    steps:
+
+      - task: UseDotNet@2
+        inputs:
+          packageType: 'sdk'
+          version: '3.x'
+
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet restore'
+        inputs:
+          command: 'restore'
+          feedsToUse: 'select'
+          projects: '**/Helpful.Hosting.WorkerService.Windows.csproj'
+
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet build'
+        inputs:
+          command: 'build'
+          projects: '**/Helpful.Hosting.WorkerService.Windows.csproj'
+
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet pack'
+        inputs:
+          command: 'pack'
+          arguments: 'nobuild'
+          packagesToPack: '**/Helpful.Hosting.WorkerService.Windows.csproj'
+          versioningScheme: 'byBuildNumber'
+          verbosityPack: 'Diagnostic'
+
+      - publish: '$(Build.ArtifactStagingDirectory)'
+        artifact: Helpful.Hosting.WorkerService.Windows
+    
+  - job: build4LWS
+    displayName: 'Build for Linux Worker Service'
+    steps:
+
+      - task: UseDotNet@2
+        inputs:
+          packageType: 'sdk'
+          version: '3.x'
+
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet restore'
+        inputs:
+          command: 'restore'
+          feedsToUse: 'select'
+          projects: '**/Helpful.Hosting.WorkerService.Systemd.csproj'
+
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet build'
+        inputs:
+          command: 'build'
+          projects: '**/Helpful.Hosting.WorkerService.Systemd.csproj'
+
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet pack'
+        inputs:
+          command: 'pack'
+          arguments: 'nobuild'
+          packagesToPack: '**/Helpful.Hosting.WorkerService.Systemd.csproj'
+          versioningScheme: 'byBuildNumber'
+          verbosityPack: 'Diagnostic'
+
+      - publish: '$(Build.ArtifactStagingDirectory)'
+        artifact: Helpful.Hosting.WorkerService.Systemd
+  
+  - job: BuildDemoWorkerAdvanced
+    displayName: 'Build for the Advanced Demo Worker'
+    steps: 
+
+      - task: UseDotNet@2
+        inputs:
+          packageType: 'sdk'
+          version: '5.0.x'
+
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet restore'
+        inputs:
+          command: 'restore'
+          feedsToUse: 'select'
+          projects: '**/DemoWorkerAdvanced.csproj'
+    
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet build'
+        inputs:
+          command: 'build'
+          projects: '**/DemoWorkerAdvanced.csproj'
+  
+      - task: DotNetCoreCLI@2
+        inputs:
+          command: 'publish'
+          arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/DemoWorkerAdvanced/'
+          publishWebProjects: false
+          projects: '**/DemoWorkerAdvanced.csproj'
+          zipAfterPublish: True
+    
+      - publish: '$(Build.ArtifactStagingDirectory)\DemoWorkerAdvanced'
+        artifact: DemoWorkerAdvanced      
 
 - stage: IntegrationTest
   displayName: Integration Test
@@ -248,6 +364,33 @@ stages:
                 & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\uninstallService.ps1" -ServiceName "DemoServiceQuickStartApi" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH
                 & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\installService.ps1" -ServiceName "DemoServiceQuickStartApi" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH -PipelineWorkspacePath $(Pipeline.Workspace)                
               errorActionPreference: 'stop'
+  
+  - deployment: VMDeploy_DemoWorkerAdvanced
+    dependsOn: VMDeploy_DevOps
+    condition: succeeded()
+    displayName: Deploy DemoWorkerAdvanced to IntegrationTesting
+    environment:
+      name: IntegrationTesting-EC2
+      resourceType: VirtualMachine
+      tags: service
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+  
+          - download: current
+            displayName: Download DemoWorkerAdvanced
+            artifact: 'DemoWorkerAdvanced'
+
+          - task: PowerShell@2
+            displayName: Run DevOps
+            inputs:
+              targetType: 'inline'
+              script: |
+                & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\uninstallWorkerService.ps1" -ServiceName "DemoWorkerAdvanced" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH
+                & "$(Pipeline.Workspace)\Helpful.DevOps\s\Powershell\installWorkerService.ps1" -ServiceName "DemoWorkerAdvanced" -InstallationRoot $Env:AZDO_APP_INSTALL_PATH -PipelineWorkspacePath $(Pipeline.Workspace) -ServiceUsername '$(demoworkeradvanced-username)' -Password (ConvertTo-SecureString -String '$(demoworkeradvanced-password)' -AsPlainText -Force) -ServiceUsersGroup '$(integrationtest-server-serviceusers)'
+              errorActionPreference: 'stop'
+              pwsh: true
 
   - job: RunInegrationTests
     displayName: Run Integration Tests
@@ -292,8 +435,12 @@ stages:
     steps:
   
     - download: current
-      displayName: Retrieve artifact
-      artifact: Helpful.Hosting.WindowsService.Core
+      displayName: Retrieve artifact 4 Windows
+      artifact: Helpful.Hosting.WorkerService.Windows
+  
+    - download: current
+      displayName: Retrieve artifact 4 Linux
+      artifact: Helpful.Hosting.WorkerService.Systemd
   
     - task: DotNetCoreCLI@2
       displayName: 'dotnet push'
@@ -308,9 +455,17 @@ stages:
     condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
     steps:
   
+    #- download: current
+    #  displayName: Retrieve artifact
+    #  artifact: Helpful.Hosting.WindowsService.Core
+  
     - download: current
-      displayName: Retrieve artifact
-      artifact: Helpful.Hosting.WindowsService.Core
+      displayName: Retrieve artifact 4 Windows
+      artifact: Helpful.Hosting.WorkerService.Windows
+  
+    - download: current
+      displayName: Retrieve artifact 4 Linux
+      artifact: Helpful.Hosting.WorkerService.Systemd
   
     - task: DotNetCoreCLI@2
       displayName: 'nuget push'

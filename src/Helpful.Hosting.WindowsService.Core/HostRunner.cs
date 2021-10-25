@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Security;
-using System.Security.Cryptography.X509Certificates;
+using Helpful.Hosting.Dto;
 using Helpful.Logging.Standard;
 using Serilog.Events;
 using Topshelf;
+using Credentials = Helpful.Hosting.Dto.Credentials;
 
 namespace Helpful.Hosting.WindowsService.Core
 {
@@ -146,57 +146,5 @@ namespace Helpful.Hosting.WindowsService.Core
                 return TopshelfExitCode.AbnormalExit;
             }
         }
-    }
-
-    /// <summary>
-    /// Defines an HTTP binding.
-    /// </summary>
-    public class ListenerInfo
-    {
-        /// <summary>
-        /// The IP address to listen on. Leave null to listen on all addresses.
-        /// </summary>
-        public string IpAddress { get; set; }
-
-        /// <summary>
-        /// The port to listen on.
-        /// </summary>
-        public int Port { get; set; }
-
-        /// <summary>
-        /// Whether to use TLS.
-        /// </summary>
-        public bool UseTls { get; set; }
-
-        /// <summary>
-        /// The name of the store where the certificate is stored which should be used for this binding. Leave null if UseTls is false.
-        /// </summary>
-        public StoreName SslCertStoreName { get; set; }
-
-        /// <summary>
-        /// The subject of the certificate which should be used for this binding. Leave null if UseTls is false.
-        /// </summary>
-        public string SslCertSubject { get; set; }
-
-        /// <summary>
-        /// A flag to indicate whether to allow the located certificate to be used if it is invalid.
-        /// </summary>
-        public bool AllowInvalidCert { get; set; }
-    }
-
-    /// <summary>
-    /// The Windows credentials to use for the service.
-    /// </summary>
-    public class Credentials
-    {
-        /// <summary>
-        /// The full Windows username and domain.
-        /// </summary>
-        public string Username { get; set; }
-
-        /// <summary>
-        /// The password
-        /// </summary>
-        public string Password { get; set; }
     }
 }

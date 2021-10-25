@@ -1,4 +1,5 @@
 ﻿using System;
+using Helpful.Hosting.Dto;
 using Helpful.Hosting.WindowsService.Core;
 
 namespace DemoServiceBackgroundProcess

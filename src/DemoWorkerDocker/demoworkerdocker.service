@@ -1,0 +1,9 @@
+﻿[Unit]
+Description=Demo Worker Docker
+
+[Service]
+Type=notify
+ExecStart=/app/DemoworkerDocker
+
+[Install]
+WantedBy=multi-user.target
