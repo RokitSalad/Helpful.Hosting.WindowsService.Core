@@ -460,8 +460,12 @@ stages:
     #  artifact: Helpful.Hosting.WindowsService.Core
   
     - download: current
-      displayName: Retrieve artifact
+      displayName: Retrieve artifact 4 Windows
       artifact: Helpful.Hosting.WorkerService.Windows
+  
+    - download: current
+      displayName: Retrieve artifact 4 Linux
+      artifact: Helpful.Hosting.WorkerService.Systemd
   
     - task: DotNetCoreCLI@2
       displayName: 'nuget push'
