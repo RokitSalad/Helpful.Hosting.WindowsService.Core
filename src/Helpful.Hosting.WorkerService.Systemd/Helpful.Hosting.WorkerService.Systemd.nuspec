@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Helpful.Hosting.WorkerService.Systemd</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>RokitSalad</authors>
+    <owners>RokitSalad</owners>
+    <description>The Systemd targeted Helpful.Hosting package.</description>
+    <dependencies>
+      <group targetFramework="netcoreapp3.1" />
+    </dependencies>
+  </metadata>
+   <files>
+     <file src="bin\Release\**\Helpful.Hosting.*.dll" target="lib\netcoreapp3.1" />
+  </files>
+</package>
