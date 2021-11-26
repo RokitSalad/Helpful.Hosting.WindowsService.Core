@@ -165,6 +165,7 @@ stages:
           packagesToPack: '**/Helpful.Hosting.WorkerService.Windows.nuspec'
           versioningScheme: 'byBuildNumber'
           verbosityPack: 'Diagnostic'
+          buildProperties: 'id=$(Build.BuildNumber)'
 
       - publish: '$(Build.ArtifactStagingDirectory)'
         artifact: Helpful.Hosting.WorkerService.Windows
@@ -199,6 +200,7 @@ stages:
           packagesToPack: '**/Helpful.Hosting.WorkerService.Systemd.nuspec'
           versioningScheme: 'byBuildNumber'
           verbosityPack: 'Diagnostic'
+          buildProperties: 'id=$(Build.BuildNumber)'
 
       - publish: '$(Build.ArtifactStagingDirectory)'
         artifact: Helpful.Hosting.WorkerService.Systemd

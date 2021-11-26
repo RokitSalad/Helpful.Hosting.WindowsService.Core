@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Helpful.Hosting.WorkerService.Systemd</id>
-    <version>1.0.0</version>
+    <version>$id$</version>
     <title>$title$</title>
     <authors>RokitSalad</authors>
     <owners>RokitSalad</owners>
