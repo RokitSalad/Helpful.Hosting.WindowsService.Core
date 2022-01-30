@@ -2,8 +2,8 @@
 <package >
   <metadata>
     <id>Helpful.Hosting.WorkerService.Systemd</id>
-    <version>$id$</version>
-    <title>$title$</title>
+    <version>1.0.0.0</version>
+    <title>Helpful.Hosting.WorkerService.Systemd</title>
     <authors>RokitSalad</authors>
     <owners>RokitSalad</owners>
     <description>The Systemd targeted Helpful.Hosting package.</description>
