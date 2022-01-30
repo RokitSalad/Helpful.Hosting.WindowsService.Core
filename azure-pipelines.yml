@@ -38,7 +38,7 @@ stages:
         displayName: 'dotnet build'
         inputs:
           command: 'build'
-          configuration: release
+          arguments: "--configuration $(buildConfiguration)"
           projects: '**/Helpful.Hosting.WindowsService.Core.csproj'
 
       - task: DotNetCoreCLI@2
@@ -156,7 +156,7 @@ stages:
         displayName: 'dotnet build'
         inputs:
           command: 'build'
-          configuration: release
+          arguments: "--configuration $(buildConfiguration)"
           projects: '**/Helpful.Hosting.WorkerService.Windows.csproj'
 
       - task: NuGetCommand@2
@@ -190,7 +190,7 @@ stages:
         displayName: 'dotnet build'
         inputs:
           command: 'build'
-          configuration: release
+          arguments: "--configuration $(buildConfiguration)"
           projects: '**/Helpful.Hosting.WorkerService.Systemd.csproj'
 
       - task: NuGetCommand@2
