@@ -15,11 +15,6 @@ Benefits of this library over other Host wrappers are:
 * Simple mechanism for setting options in the web app builder.
 * A full range of choices for implementation, from very simple, to very flexible.
 
-<<<<<<< HEAD
-## Overview
-The original Helpful.Hosting.WindowsService.Core is still in this repo, and deployed to Nuget as normal. See [the original readme](https://github.com/RokitSalad/Helpful.Hosting.WindowsService.Core/blob/master/src/Helpful.Hosting.WindowsService.Core/README.md 'README.md') for the original doco. Much of the API has remained the same in this update.
-
-=======
 ## Usage
 Applying this package to a console application will result in either a Windows service or a Systemd service. These can be installed in the normal way which you would install such services from any other source. My preference for installing Windows services is to leverage the Powershell commands (which you can read more about [here](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.management/new-service?view=powershell-7.2 'New-Service doco')):
 - New-Service
@@ -32,7 +27,6 @@ Deploying a systemd service is even easier. There are plenty of excellent guides
 ## Overview
 The original Helpful.Hosting.WindowsService.Core is still in this repo, and deployed to Nuget as normal. See [the original readme](https://github.com/RokitSalad/Helpful.Hosting.WindowsService.Core/blob/master/src/Helpful.Hosting.WindowsService.Core/README.md 'README.md') for the original doco. 
 
->>>>>>> d5faf28 (updating readme)
 There are 5 sample projects in this repository, which show different ways to use this library. The quick start sections, below, are based on each.
 
 ## Quick Start - for a Web API running as a Windows Service
