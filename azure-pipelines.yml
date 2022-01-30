@@ -157,15 +157,13 @@ stages:
           command: 'build'
           projects: '**/Helpful.Hosting.WorkerService.Windows.csproj'
 
-      - task: DotNetCoreCLI@2
-        displayName: 'dotnet pack'
+      - task: NuGetCommand@2
+        displayName: 'nuget pack'
         inputs:
           command: 'pack'
-          arguments: 'nobuild'
           packagesToPack: '**/Helpful.Hosting.WorkerService.Windows.nuspec'
-          versioningScheme: 'byBuildNumber'
-          verbosityPack: 'Diagnostic'
-          buildProperties: 'id=$(Build.BuildNumber)'
+          versioningScheme: byBuildNumber
+          packDestination: '$(Build.ArtifactStagingDirectory)'
 
       - publish: '$(Build.ArtifactStagingDirectory)'
         artifact: Helpful.Hosting.WorkerService.Windows
@@ -192,15 +190,13 @@ stages:
           command: 'build'
           projects: '**/Helpful.Hosting.WorkerService.Systemd.csproj'
 
-      - task: DotNetCoreCLI@2
-        displayName: 'dotnet pack'
+      - task: NuGetCommand@2
+        displayName: 'nuget pack'
         inputs:
           command: 'pack'
-          arguments: 'nobuild'
           packagesToPack: '**/Helpful.Hosting.WorkerService.Systemd.nuspec'
-          versioningScheme: 'byBuildNumber'
-          verbosityPack: 'Diagnostic'
-          buildProperties: 'id=$(Build.BuildNumber)'
+          versioningScheme: byBuildNumber
+          packDestination: '$(Build.ArtifactStagingDirectory)'
 
       - publish: '$(Build.ArtifactStagingDirectory)'
         artifact: Helpful.Hosting.WorkerService.Systemd
